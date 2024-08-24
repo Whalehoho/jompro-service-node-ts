@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Node 20",
+  "compilerOptions": {
+    /* Basic Options */
+    "target": "es2022",
+    "module": "esnext",
+    "outDir": "build",
+    "sourceMap": true,
+    "removeComments": true,
+    "lib": ["es2022"],
+
+    /* Strict Type-Checking Options */
+    "strict": true,
+    "noImplicitOverride": true,
+    "useUnknownInCatchVariables": false,
+
+    /* Additional Checks */
+    "strictNullChecks": true,
+
+    /* Module Resolution Options */
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "types": ["node"],
+    "paths": {
+      "@/*": ["src/*"],
+      "~/*": ["src/types/*"]
+    },
+    "typeRoots": ["node_modules/@types"]
+  },
+  /* Advanced Options */
+  "skipLibCheck": true,
+  "forceConsistentCasingInFileNames": true,
+  "ts-node": {
+    "files": true,
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  }
+}

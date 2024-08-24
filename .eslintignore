@@ -1,0 +1,6 @@
+build/
+public/
+dist/
+config/
+*.config.*
+.eslintrc.js
