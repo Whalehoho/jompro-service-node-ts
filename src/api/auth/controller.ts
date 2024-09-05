@@ -60,7 +60,6 @@ export const login: API.Login = async function (request, response) {
                             profileImgDeleteUrl: data.profileImgDeleteUrl,
                             age: data.age,
                             gender: data.gender,
-                            savedAddresses: data.savedAddresses
                         } 
             });
         } else {

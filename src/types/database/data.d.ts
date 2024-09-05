@@ -7,5 +7,22 @@ export type User = {
     profileImgDeleteUrl: string;
     age: number;
     gender: string;
-    savedAddresses: Record<string, string>;
+}
+
+export type Region = {
+    accountId: string;
+    defaultAddress?: {
+        fullAddress: string;
+        city: string;
+        region: string;
+        lat: number;
+        lng: number;
+    };
+    addresses?: {
+        fullAddress: string;
+        city: string;
+        region: string;
+        lat: number;
+        lng: number;
+    }[];
 }

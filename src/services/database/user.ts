@@ -11,7 +11,6 @@ const f: Record<keyof User, string> = {
     profileImgDeleteUrl: 'profile_img_delete_url',
     age: 'age',
     gender: 'gender',
-    savedAddresses: 'saved_addresses'
 };
 
 const allFields = Object.values(f).map((a) => `${a} as ${toCamel(a)}`);
@@ -27,7 +26,6 @@ export async function create(): Promise<void> {
             table.string('profile_img_delete_url').nullable();
             table.integer('age').nullable();
             table.string('gender').nullable();
-            table.jsonb('saved_addresses').nullable();
         });
         await pg.raw("ALTER SEQUENCE user_account_id_seq RESTART WITH 758");
     }
@@ -55,7 +53,6 @@ export async function update(user: User): Promise<User> {
         profile_img_delete_url: user.profileImgDeleteUrl,
         age: user.age,
         gender: user.gender,
-        saved_addresses: user.savedAddresses
     }).onConflict('account_id').merge().returning('*');
     
     return (await query).pop();

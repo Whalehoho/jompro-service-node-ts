@@ -3,6 +3,7 @@ import express from 'express';
 import * as middleware from './middleware';
 import userRouter from '@/api/user';
 import authRouter from '@/api/auth';
+import regionRouter from '@/api/region';
 
 
 const router = express.Router();
@@ -14,5 +15,6 @@ router.use(middleware.logRequest);
 router.use('/auth', authRouter);
 router.use(middleware.verifyToken);
 router.use('/user', userRouter);
+router.use('/region', regionRouter);
 
 export default router;
