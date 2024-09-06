@@ -52,20 +52,20 @@ export async function updateDefault(region: Region): Promise<Region> {
 
 export async function addAddress(accountId: string, address: { fullAddress: string, city: string, region: string, lat: number, lng: number }): Promise<string> {
     try {
-        const addressToAdd = JSON.stringify(address).replace(/'/g, "''"); // Escape single quotes if necessary
-
+        // Use pg driver to handle escaping and JSON formatting
         const result = await pg('region')
             .where('account_id', '=', accountId)
             .update({
                 addresses: pg.raw(`
-                    COALESCE(addresses, '[]'::jsonb) || '${addressToAdd}'::jsonb
-                `)
+                    COALESCE(addresses, '[]'::jsonb) || ?::jsonb
+                `, [JSON.stringify(address)]) // Safely format the address as a JSON object
             });
 
         if (result === 0) {
+            // Insert the new address as an array into the jsonb column
             const insertResult = await pg('region').insert({
                 account_id: accountId,
-                addresses: [address],
+                addresses: JSON.stringify([address]), // Correctly format array of addresses for jsonb column
             });
 
             if (insertResult) {
