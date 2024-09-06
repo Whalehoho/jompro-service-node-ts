@@ -44,39 +44,62 @@ export async function remove(accountId: string): Promise<void> {
 
 export async function updateDefault(region: Region): Promise<Region> {
     const query = pg('region').where('account_id', '=', region.accountId).update({
-        default_address: region.defaultAddress,
+        default_address: `${JSON.stringify(region.defaultAddress)}`,
     }).returning('*');
     
     return (await query).pop();
 }
 
-export async function addAddress(accountId: string, address: { fullAddress: string, city: string, region: string, lat: number, lng: number }): Promise<void> {
-    const result = await pg('region')
-        .where('account_id', '=', accountId)
-        .update({
-            addresses: pg.raw(`
-                jsonb_set(
-                    COALESCE(addresses, '[]'::jsonb), 
-                    '{999999}', 
-                    '${JSON.stringify(address)}'::jsonb, 
-                    true
-                )
-            `)
-        });
+export async function addAddress(accountId: string, address: { fullAddress: string, city: string, region: string, lat: number, lng: number }): Promise<string> {
+    try {
+        const addressToAdd = JSON.stringify(address).replace(/'/g, "''"); // Escape single quotes if necessary
 
-    if (result === 0) {
-        await pg('region').insert({
-            account_id: accountId,
-            addresses: JSON.stringify([address]),
-        });
+        const result = await pg('region')
+            .where('account_id', '=', accountId)
+            .update({
+                addresses: pg.raw(`
+                    COALESCE(addresses, '[]'::jsonb) || '${addressToAdd}'::jsonb
+                `)
+            });
+
+        if (result === 0) {
+            const insertResult = await pg('region').insert({
+                account_id: accountId,
+                addresses: [address],
+            });
+
+            if (insertResult) {
+                return 'success';
+            } else {
+                return 'failure';
+            }
+        }
+
+        return 'success';
+    } catch (error) {
+        console.error('Error adding address:', error);
+        return 'failure';
     }
 }
 
 
 
+
+
 export async function removeAddress(accountId: string, address: { fullAddress: string, city: string, region: string, lat: number, lng: number }): Promise<void> {
-    await pg('region').where('account_id', '=', accountId).update({ addresses: pg.raw(`array_remove(addresses, '${JSON.stringify(address)}'::jsonb)`) });
+    const addressToRemove = JSON.stringify(address).replace(/'/g, "''"); // Escape single quotes if necessary
+
+    await pg.raw(`
+      UPDATE region
+      SET addresses = (
+        SELECT jsonb_agg(addr)
+        FROM jsonb_array_elements(addresses) AS addr
+        WHERE addr != '${addressToRemove}'::jsonb
+      )
+      WHERE account_id = ?;
+    `, [accountId]);
 }
+
 
 export async function main(): Promise<void> {
     await create();

@@ -67,15 +67,16 @@ export const addAddress: API.addAddress = async function (request, response) {
     const { accountId } = request.params;
     const addressData = request.body as unknown as { 
         fullAddress: string; 
-        city: string; region: string; 
+        city: string; 
+        region: string; 
         lat: number; 
         lng: number 
     };
     console.log('account id', accountId);
     console.log('Address', request.body);
     try {
-        await db.region.addAddress(accountId, addressData);
-        success(response, { data: 'success' });
+        const result = await db.region.addAddress(accountId, addressData);
+        success(response, { data: result });
     } catch (e) {
         log.error(e);
         failure(response, e.message);
@@ -84,7 +85,13 @@ export const addAddress: API.addAddress = async function (request, response) {
 
 export const removeAddress: API.removeAddress = async function (request, response) {
     const { accountId } = request.params;
-    const { addressData } = request.body;
+    const addressData = request.body as unknown as {
+        fullAddress: string;
+        city: string;
+        region: string;
+        lat: number;
+        lng: number;
+    };
     console.log('Remove Address', addressData);
     try {
         await db.region.removeAddress(accountId, addressData);
