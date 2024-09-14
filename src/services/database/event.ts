@@ -6,6 +6,7 @@ const f: Record<keyof Event, string> = {
     eventId: 'event_id',
     hostId: 'host_id',
     coHosts: 'co_hosts',
+    subscribers: 'subscribers',
     category: 'category',
     eventName: 'event_name',
     eventDesc: 'event_desc',
@@ -22,6 +23,7 @@ export async function create(): Promise<void> {
             table.bigIncrements('event_id').primary();
             table.string('host_id').notNullable();
             table.specificType('co_hosts', 'text[]').nullable();
+            table.specificType('subscribers', 'text[]').nullable();
             table.string('category').notNullable();
             table.string('event_name').notNullable();
             table.string('event_desc').notNullable();
@@ -45,6 +47,14 @@ export async function getByHostId(hostId: string): Promise<Event[] | undefined> 
     return pg('event').select(allFields).where('host_id', '=', hostId);
 }
 
+export async function getByCoHostId(coHostId: string): Promise<Event[] | undefined> {
+    return pg('event').select(allFields).where('co_hosts', '@>', [coHostId]);
+}
+
+export async function getBySubscriberId(subscriberId: string): Promise<Event[] | undefined> {
+    return pg('event').select(allFields).where('subscribers', '@>', [subscriberId]);
+}
+
 export async function getByCategory(category: string): Promise<Event[] | undefined> {
     return pg('event').select(allFields).where('category', '=', category);
 }
@@ -54,6 +64,7 @@ export async function update(event: Event): Promise<Event> {
         event_id: event.eventId,
         host_id: event.hostId,
         co_hosts: event.coHosts,
+        subscribers: event.subscribers,
         category: event.category,
         event_name: event.eventName,
         event_desc: event.eventDesc,

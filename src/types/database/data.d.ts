@@ -31,6 +31,7 @@ export type Event = {
     eventId?: string;
     hostId: string;
     coHosts?: string[];
+    subscribers?: string[];
     category: string;
     eventName: string;
     eventDesc: string;
@@ -39,11 +40,11 @@ export type Event = {
     status: "active" | "cancelled" | "closed";
 }
 
-export type EventInstance = {
+export type Session = {
     eventId: string;
-    instanceId?: string;
-    instanceName: string;
-    instanceDesc: string;
+    sessionId?: string;
+    sessionName: string;
+    sessionDesc: string;
     organizerId: string; // could be host or co-host
     createdAt: number;
     status: "active" | "cancelled" | "closed";
