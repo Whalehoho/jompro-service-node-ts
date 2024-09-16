@@ -88,15 +88,15 @@ export async function update(session: Session): Promise<Session> {
         session_name: session.sessionName,
         session_desc: session.sessionDesc,
         organizer_id: session.organizerId,
-        created_at: toDate(session.createdAt),
+        created_at: session.createdAt? toDate(session.createdAt) : new Date(),
         status: session.status,
         start_time: toDate(session.startTime),
         duration: session.duration,
         location: session.location,
         max_participants: session.maxParticipants,
         participants: session.participants,
-        genderRestriction: session.genderRestriction,
-        ageRestriction: session.ageRestriction,
+        gender_restriction: session.genderRestriction,
+        age_restriction: session.ageRestriction,
         auto_approve: session.autoApprove
     }).onConflict('session_id').merge().returning('*');
 

@@ -5,10 +5,11 @@ import exp from 'constants';
 const router = express.Router();
 
 // Event
-router.put('/event', controller.updateEvent);
+router.put('/updateEvent', controller.updateEvent);
+router.get('/getByHostOrCoHostId/:accountId', controller.getByHostOrCoHostId);
 
 // Session
-router.put('/session', controller.updateSession);
+router.put('/updateSession', controller.updateSession);
 
 
 export default router;

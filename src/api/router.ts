@@ -4,6 +4,7 @@ import * as middleware from './middleware';
 import userRouter from '@/api/user';
 import authRouter from '@/api/auth';
 import regionRouter from '@/api/region';
+import eventRouter from '@/api/event';
 
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.use('/auth', authRouter);
 router.use(middleware.verifyToken);
 router.use('/user', userRouter);
 router.use('/region', regionRouter);
+router.use('/event', eventRouter);
 
 export default router;

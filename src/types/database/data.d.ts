@@ -36,7 +36,7 @@ export type Event = {
     eventName: string;
     eventDesc: string;
     pattern: "one-time" | "regular";
-    createdAt: number;
+    createdAt?: number;
     status: "active" | "cancelled" | "closed";
 }
 
@@ -46,7 +46,7 @@ export type Session = {
     sessionName: string;
     sessionDesc: string;
     organizerId: string; // could be host or co-host
-    createdAt: number;
+    createdAt?: number;
     status: "active" | "cancelled" | "closed";
     startTime: number;
     duration: number;

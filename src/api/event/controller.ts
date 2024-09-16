@@ -52,6 +52,17 @@ export const getByCoHostId: API.getByCoHostId = async function (request, respons
     }
 }
 
+export const getByHostOrCoHostId: API.getByHostOrCoHostId = async function (request, response) {
+    const { accountId } = request.params;
+    try {
+        const data = await db.event.getByHostOrCoHostId(accountId);
+        success(response, { data });
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}
+
 export const getBySubscriberId: API.getBySubscriberId = async function (request, response) {
     const { subscriberId } = request.params;
     try {
@@ -64,11 +75,12 @@ export const getBySubscriberId: API.getBySubscriberId = async function (request,
 }
 
 export const updateEvent: API.UpdateEvent = async function (request, response) {
-    const event = request.body;
+    console.log('body', request.body);
+    const eventData = request.body;
     try {
-        const data = await db.event.update(event);
+        const data = await db.event.update(eventData);
         console.log('data', data);
-        success(response, { data: 'success' });
+        success(response, { data });
     } catch (e) {
         log.error(e);
         failure(response, e.message);
@@ -143,6 +155,7 @@ export const getByCity: API.GetByCity = async function (request, response) {
 
 export const updateSession: API.UpdateSession = async function (request, response) {
     const session = request.body;
+    console.log('session', session);
     try {
         const data = await db.session.update(session);
         console.log('data', data);

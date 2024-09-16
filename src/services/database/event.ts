@@ -51,6 +51,10 @@ export async function getByCoHostId(coHostId: string): Promise<Event[] | undefin
     return pg('event').select(allFields).where('co_hosts', '@>', [coHostId]);
 }
 
+export async function getByHostOrCoHostId(accountId: string): Promise<Event[] | undefined> {
+    return pg('event').select(allFields).where('host_id', '=', accountId).orWhere('co_hosts', '@>', [accountId]);
+}
+
 export async function getBySubscriberId(subscriberId: string): Promise<Event[] | undefined> {
     return pg('event').select(allFields).where('subscribers', '@>', [subscriberId]);
 }
@@ -69,7 +73,7 @@ export async function update(event: Event): Promise<Event> {
         event_name: event.eventName,
         event_desc: event.eventDesc,
         pattern: event.pattern,
-        created_at: toDate(event.createdAt),
+        created_at: event.createdAt? toDate(event.createdAt): new Date(),
         status: event.status,
     }).onConflict('event_id').merge().returning('*');
     
