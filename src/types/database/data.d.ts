@@ -45,6 +45,7 @@ export type Session = {
     sessionId?: string;
     sessionName: string;
     sessionDesc: string;
+    category: string;
     organizerId: string; // could be host or co-host
     createdAt?: number;
     status: "active" | "cancelled" | "closed";

@@ -7,6 +7,7 @@ const f: Record<keyof Session, string> = {
     sessionId: 'session_id',
     sessionName: 'session_name',
     sessionDesc: 'session_desc',
+    category: 'category',
     organizerId: 'organizer_id',
     createdAt: 'created_at',
     status: 'status',
@@ -29,6 +30,7 @@ export async function create(): Promise<void> {
             table.string('event_id').notNullable();
             table.string('session_name').notNullable();
             table.string('session_desc').notNullable();
+            table.string('category').notNullable();
             table.string('organizer_id').notNullable();
             table.timestamp('created_at', { useTz: true }).defaultTo(pg.fn.now()).notNullable();
             table.string('status').notNullable();
@@ -87,6 +89,7 @@ export async function update(session: Session): Promise<Session> {
         session_id: session.sessionId,
         session_name: session.sessionName,
         session_desc: session.sessionDesc,
+        category: session.category,
         organizer_id: session.organizerId,
         created_at: session.createdAt? toDate(session.createdAt) : new Date(),
         status: session.status,

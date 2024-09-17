@@ -39,6 +39,10 @@ export async function all(): Promise<Event[] | undefined> {
     return pg('event').select(allFields);
 }
 
+export async function allActive(): Promise<Event[] | undefined> {
+    return pg('event').select(allFields).where('status', '=', 'active');
+}
+
 export async function getById(eventId: string): Promise<Event | undefined> {
     return pg('event').select(allFields).where('event_id', '=', eventId).first();
 }

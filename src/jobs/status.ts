@@ -6,7 +6,7 @@ cron.scheduleJob('*/5 * * * *', async function () { // Every 5 minutes
         UPDATE session 
         SET status = 'closed' 
         WHERE status = 'active' 
-        AND start_time + (duration * INTERVAL '1 second') <= NOW();
+        AND start_time + make_interval(secs := duration) <= NOW();
     `);
 });
 
