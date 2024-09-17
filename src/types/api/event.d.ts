@@ -7,7 +7,7 @@ export type AllEvent = Controller<{ data: Event[] | undefined }>;
 export type GetByEventId = Controller<{ data?: Event }, { eventId: string }>;
 export type GetByHostId = Controller<{ data: Event[] | undefined }, { hostId: string }>;
 export type getByCoHostId = Controller<{ data: Event[] | undefined }, { coHostId: string }>;
-export type getByHostOrCoHostId = Controller<{ data: Event[] | undefined }, { accountId: string }>;
+export type getByHostOrCoHostId = Controller<{ data: Event[] | undefined }, { accountId: string, status: string }>;
 export type getBySubscriberId = Controller<{ data: Event[] | undefined }, { subscriberId: string }>;
 
 export type UpdateEvent = Controller<{ data: Event }, never, Event>;

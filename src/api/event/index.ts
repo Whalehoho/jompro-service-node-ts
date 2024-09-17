@@ -6,7 +6,7 @@ const router = express.Router();
 
 // Event
 router.put('/updateEvent', controller.updateEvent);
-router.get('/getByHostOrCoHostId/:accountId', controller.getByHostOrCoHostId);
+router.get('/getByHostOrCoHostId/:accountId/:status', controller.getByHostOrCoHostId);
 
 // Session
 router.put('/updateSession', controller.updateSession);

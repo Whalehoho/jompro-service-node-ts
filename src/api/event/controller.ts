@@ -53,9 +53,9 @@ export const getByCoHostId: API.getByCoHostId = async function (request, respons
 }
 
 export const getByHostOrCoHostId: API.getByHostOrCoHostId = async function (request, response) {
-    const { accountId } = request.params;
+    const { accountId, status } = request.params;
     try {
-        const data = await db.event.getByHostOrCoHostId(accountId);
+        const data = await db.event.getByHostOrCoHostId(accountId, status);
         success(response, { data });
     } catch (e) {
         log.error(e);
