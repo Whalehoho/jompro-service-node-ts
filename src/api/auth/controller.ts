@@ -3,9 +3,10 @@ import type * as API from '~/api/auth';
 import logger from 'logger';
 import { success, failure } from '@/api/util';
 import * as db from '@/services/database';
-import { User } from '~/database/data';
+import { User, Footprint } from '~/database/data';
 import { hashPassword, comparePassword, SECRET_KEY } from '@/util';
 import jwt from 'jsonwebtoken';
+import { now } from '@/util';
 
 const log = logger('API', 'PROD');
 
@@ -20,7 +21,21 @@ export const create: API.Create = async function (request, response) {
             passwordHash: passwordHash
         } as User;
         const data = await db.user.insert(userData);
+
         success(response, { data: data });
+
+        // Logging
+        if(data === 'signup successful') {
+            const fetchedUser = await db.user.getByEmail(user.email);
+            if(!fetchedUser || !fetchedUser.accountId) {
+                return;
+            }
+            await db.footprint.insert({
+                accountId: fetchedUser?.accountId,
+                loggedAt: now(),
+                action: 'signup'
+            });
+        }
     } catch (e) {
         log.error(e);
         failure(response, e.message);
@@ -46,7 +61,7 @@ export const login: API.Login = async function (request, response) {
             const token = jwt.sign(
                 { userId: data.accountId, email: data.email },  // Payload
                 SECRET_KEY,  // Secret key
-                { expiresIn: '1h' }  // Token expiration time 
+                { expiresIn: '7h' }  // Token expiration time 
             );
             success(response, 
                     { 
@@ -62,6 +77,16 @@ export const login: API.Login = async function (request, response) {
                             gender: data.gender,
                         } 
             });
+            // Logging
+            if(!data || !data.accountId){
+                return;
+            }
+            await db.footprint.insert({
+                accountId: data.accountId,
+                loggedAt: now(),
+                action: 'login'
+            });
+
         } else {
             console.log('wrong password');
             success(response, { data: 'invalid password'});

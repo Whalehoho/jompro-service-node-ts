@@ -11,7 +11,8 @@ router.get('/getEventbyEventId/:eventId', controller.getByEventId);
 
 // Session
 router.put('/updateSession', controller.updateSession);
-router.get('/getAllActiveSessions', controller.allActiveSessions);
+router.post('/createSession', controller.createSession);
+router.get('/getAllActiveSessions/:accountId', controller.allActiveSessions);
 
 
 export default router;

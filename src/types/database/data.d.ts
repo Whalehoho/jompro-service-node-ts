@@ -1,3 +1,11 @@
+export type Footprint = {
+    accountId: string;
+    loggedAt: number;
+    action: "login" | "logout" | "signup" | 
+                "create event" | "cancel event" | 
+                "create session" | "cancel session" | "request to join";
+}
+
 export type User = {
     accountId?: string;
     email: string;
@@ -26,6 +34,25 @@ export type Region = {
         lng: number;
     }[];
 }
+
+export type Channel = {
+    channelId: string;
+    channelName: string;
+    channelDesc: string;
+    privacy: "public" | "private";
+    ownerId: string;
+    category: string;
+    createdAt?: number;
+};
+
+export type Subscription = {
+    subscriptionId: string;
+    subscriberId: string;
+    channelId: string;
+    status: "subscribed" | "pending" | "rejected" | "unsubscribed";
+    subscribedAt?: number;
+    unSubscribedAt?: number;
+};
 
 export type Event = {
     eventId?: string;

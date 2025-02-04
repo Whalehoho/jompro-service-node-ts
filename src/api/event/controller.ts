@@ -5,6 +5,7 @@ import { success, failure } from '@/api/util';
 import * as db from '@/services/database';
 import { Event, Session } from '~/database/data';
 import c from 'config';
+import { now } from '@/util';
 
 const log = logger('API', 'PROD');
 
@@ -74,6 +75,26 @@ export const getBySubscriberId: API.getBySubscriberId = async function (request,
     }
 }
 
+export const createEvent: API.CreateEvent = async function (request, response) {
+    const eventData = request.body;
+    try {
+        const data = await db.event.insert(eventData);
+        success(response, { data });
+        // Logging
+        if(!eventData.hostId){
+            return;
+        }
+        await db.footprint.insert({
+            accountId: eventData.hostId,
+            loggedAt: now(),
+            action: 'create event'
+        });
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}
+
 export const updateEvent: API.UpdateEvent = async function (request, response) {
     console.log('body', request.body);
     const eventData = request.body;
@@ -90,7 +111,8 @@ export const updateEvent: API.UpdateEvent = async function (request, response) {
 // Session
 export const allActiveSessions: API.AllActiveSessions = async function (request, response) {
     try {
-        const data = await db.session.allActive();
+        const { accountId } = request.params;
+        const data = await db.session.allActive(accountId);
         success(response, { data });
     } catch (e) {
         log.error(e);
@@ -147,6 +169,26 @@ export const getByCity: API.GetByCity = async function (request, response) {
     try {
         const data = await db.session.getByCity(city);
         success(response, { data });
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}
+
+export const createSession: API.CreateSession = async function (request, response) {
+    const session = request.body;
+    try {
+        const data = await db.session.insert(session);
+        success(response, { data: 'success' });
+        // Logging
+        if(!session.organizerId){
+            return;
+        }
+        await db.footprint.insert({
+            accountId: session.organizerId,
+            loggedAt: now(),
+            action: 'create session'
+        });
     } catch (e) {
         log.error(e);
         failure(response, e.message);

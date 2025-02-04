@@ -75,6 +75,22 @@ export async function getByCategory(category: string): Promise<Event[] | undefin
     return pg('event').select(allFields).where('category', '=', category);
 }
 
+export async function insert(event: Event): Promise<Event> {
+    const query = pg('event').insert({
+        host_id: event.hostId,
+        co_hosts: event.coHosts,
+        subscribers: event.subscribers,
+        category: event.category,
+        event_name: event.eventName,
+        event_desc: event.eventDesc,
+        pattern: event.pattern,
+        created_at: event.createdAt? toDate(event.createdAt): new Date(),
+        status: event.status,
+    }).returning('*');
+    
+    return (await query).pop();
+}
+
 export async function update(event: Event): Promise<Event> {
     const query = pg('event').insert({
         event_id: event.eventId,

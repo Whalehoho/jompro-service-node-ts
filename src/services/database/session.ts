@@ -51,12 +51,21 @@ export async function all(): Promise<Session[] | undefined> {
     return pg('session').select(allFields);
 }
 
-export async function allActive(): Promise<Session[] | undefined> {
-    return pg('session').select(allFields).where('status', '=', 'active');
+export async function allActive(accountId: string): Promise<Session[] | undefined> {
+    return pg('session')
+    .select(allFields)
+    .where('status', '=', 'active')
+    .andWhere('organizer_id', '!=', accountId)
+    .orderByRaw("COALESCE(location->>'region', '') NULLS FIRST, COALESCE(location->>'city', '')");
 }
 
 export async function getActiveByEventId(eventId: string): Promise<Session[] | undefined> {
-    return pg('session').select(allFields).where('event_id', '=', eventId).andWhere('status', '=', 'active');
+    return pg('session')
+        .select(allFields)
+        .where('event_id', '=', eventId)
+        .andWhere('status', '=', 'active')
+        .orderByRaw("COALESCE(location->>'region', '') NULLS FIRST, COALESCE(location->>'city', '')");
+    // return pg('session').select(allFields).where('event_id', '=', eventId).andWhere('status', '=', 'active');
 }
 
 export async function getById(sessionId: string): Promise<Session | undefined> {
@@ -83,6 +92,29 @@ export async function getByCity(city: string): Promise<Session[] | undefined> {
     return pg('session').select(allFields).where('location->>city', '=', city);
 }
 
+export async function insert(session: Session): Promise<Session> {
+    const query = pg('session').insert({
+        event_id: session.eventId,
+        session_id: session.sessionId,
+        session_name: session.sessionName,
+        session_desc: session.sessionDesc,
+        category: session.category,
+        organizer_id: session.organizerId,
+        created_at: session.createdAt? toDate(session.createdAt) : new Date(),
+        status: session.status,
+        start_time: toDate(session.startTime),
+        duration: session.duration,
+        location: session.location,
+        max_participants: session.maxParticipants,
+        participants: session.participants,
+        gender_restriction: session.genderRestriction,
+        age_restriction: session.ageRestriction,
+        auto_approve: session.autoApprove
+    }).returning('*');
+
+    return (await query).pop();
+}
+
 export async function update(session: Session): Promise<Session> {
     const query = pg('session').insert({
         event_id: session.eventId,
@@ -102,6 +134,8 @@ export async function update(session: Session): Promise<Session> {
         age_restriction: session.ageRestriction,
         auto_approve: session.autoApprove
     }).onConflict('session_id').merge().returning('*');
+
+    console.log('start_time', session.startTime);
 
     return (await query).pop();
 }
