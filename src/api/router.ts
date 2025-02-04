@@ -4,6 +4,8 @@ import * as middleware from './middleware';
 import userRouter from '@/api/user';
 import authRouter from '@/api/auth';
 import regionRouter from '@/api/region';
+import channelRouter from '@/api/channel';
+import subscriptionRouter from '@/api/subscription';
 import eventRouter from '@/api/event';
 
 
@@ -17,6 +19,8 @@ router.use('/auth', authRouter);
 router.use(middleware.verifyToken);
 router.use('/user', userRouter);
 router.use('/region', regionRouter);
+router.use('/channel', channelRouter);
+router.use('/subscription', subscriptionRouter);
 router.use('/event', eventRouter);
 
 export default router;

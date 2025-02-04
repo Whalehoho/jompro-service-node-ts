@@ -1,18 +1,25 @@
-import { Event } from '~/database/data';
+import { Event } from "~/database/data";
 import pg from './service';
 import { toCamel, toDate } from '@/util';
+import c from "config";
+import e from "express";
 
 const f: Record<keyof Event, string> = {
     eventId: 'event_id',
-    hostId: 'host_id',
-    coHosts: 'co_hosts',
-    subscribers: 'subscribers',
-    category: 'category',
+    channelId: 'channel_id',
     eventName: 'event_name',
-    eventDesc: 'event_desc',
-    pattern: 'pattern',
+    eventAbout: 'event_about',
+    category: 'category',
+    organizerId: 'organizer_id',
     createdAt: 'created_at',
     status: 'status',
+    startTime: 'start_time',
+    duration: 'duration',
+    location: 'location',
+    maxParticipants: 'max_participants',
+    genderRestriction: 'gender_restriction',
+    ageRestriction: 'age_restriction',
+    autoApprove: 'auto_approve',
 };
 
 const allFields = Object.values(f).map((a) => `${a} as ${toCamel(a)}`);
@@ -21,15 +28,20 @@ export async function create(): Promise<void> {
     if (!(await pg.schema.hasTable('event'))) {
         await pg.schema.createTable('event', function (table) {
             table.bigIncrements('event_id').primary();
-            table.string('host_id').notNullable();
-            table.specificType('co_hosts', 'text[]').nullable();
-            table.specificType('subscribers', 'text[]').nullable();
-            table.string('category').notNullable();
+            table.string('channel_id').notNullable();
             table.string('event_name').notNullable();
-            table.string('event_desc').notNullable();
-            table.string('pattern').notNullable();
+            table.string('event_about').notNullable();
+            table.string('category').notNullable();
+            table.string('organizer_id').notNullable();
             table.timestamp('created_at', { useTz: true }).defaultTo(pg.fn.now()).notNullable();
             table.string('status').notNullable();
+            table.timestamp('start_time', { useTz: true }).notNullable();
+            table.integer('duration').notNullable();
+            table.jsonb('location').notNullable();
+            table.integer('max_participants').notNullable();
+            table.string('gender_restriction').notNullable();
+            table.jsonb('age_restriction').notNullable();
+            table.boolean('auto_approve').notNullable();
         });
         await pg.raw("ALTER SEQUENCE event_event_id_seq RESTART WITH 1");
     }
@@ -39,104 +51,105 @@ export async function all(): Promise<Event[] | undefined> {
     return pg('event').select(allFields);
 }
 
-export async function allActive(): Promise<Event[] | undefined> {
-    return pg('event').select(allFields).where('status', '=', 'active');
+export async function allActive(accountId: string): Promise<Event[] | undefined> {
+    return pg('event')
+        .select(allFields)
+        .where('status', '=', 'active')
+        .andWhere('organizer_id', '!=', accountId)
+        .orderByRaw("COALESCE(location->>'region', '') NULLS FIRST, COALESCE(location->>'city', '')");
 }
 
 export async function getById(eventId: string): Promise<Event | undefined> {
     return pg('event').select(allFields).where('event_id', '=', eventId).first();
 }
 
-export async function getByHostId(hostId: string): Promise<Event[] | undefined> {
-    return pg('event').select(allFields).where('host_id', '=', hostId);
+export async function getByChannelId(channelId: string): Promise<Event[] | undefined> {
+    return pg('event').select(allFields).where('channel_id', '=', channelId);
 }
 
-export async function getByCoHostId(coHostId: string): Promise<Event[] | undefined> {
-    return pg('event').select(allFields).where('co_hosts', '@>', [coHostId]);
+export async function getByOrganizerId(organizerId: string): Promise<Event[] | undefined> {
+    return pg('event').select(allFields).where('organizer_id', '=', organizerId);
 }
 
-export async function getByHostOrCoHostId(accountId: string, status: string): Promise<Event[] | undefined> {
+export async function getByChannelIdAndOrganizerId(channelId: string, organizerId: string): Promise<Event | undefined> {
+    return pg('event').select(allFields).where('channel_id', '=', channelId).andWhere('organizer_id', '=', organizerId).first();
+}
+
+export async function getByChannelIdAndStatus(channelId: string, status: string): Promise<Event[] | undefined> {
+    return pg('event').select(allFields).where('channel_id', '=', channelId).andWhere('status', '=', status);
+}
+
+export async function getByOrganizerIdAndStatus(organizerId: string, status: string): Promise<Event[] | undefined> {
+    return pg('event').select(allFields).where('organizer_id', '=', organizerId).andWhere('status', '=', status);
+}
+
+export async function getByChannelIdAndOrganizerIdAndStatus(channelId: string, organizerId: string, status: string): Promise<Event | undefined> {
+    return pg('event').select(allFields).where('channel_id', '=', channelId).andWhere('organizer_id', '=', organizerId).andWhere('status', '=', status).first();
+}
+
+export async function getActiveByChannelId(channelId: string): Promise<Event[] | undefined> {
     return pg('event')
         .select(allFields)
-        .where(function () {
-            this.where('host_id', '=', accountId)
-                .orWhere('co_hosts', '@>', [accountId]);
-        })
-        .andWhere('status', '=', status)
-        .andWhere('pattern', '=', 'regular');
+        .where('channel_id', '=', channelId)
+        .andWhere('status', '=', 'active')
+        .orderByRaw("COALESCE(location->>'region', '') NULLS FIRST, COALESCE(location->>'city', '')");
 }
 
-
-export async function getBySubscriberId(subscriberId: string): Promise<Event[] | undefined> {
-    return pg('event').select(allFields).where('subscribers', '@>', [subscriberId]);
+export async function getByCity(city: string): Promise<Event[] | undefined> {
+    return pg('event').select(allFields).where('location->>city', '=', city);
 }
 
 export async function getByCategory(category: string): Promise<Event[] | undefined> {
     return pg('event').select(allFields).where('category', '=', category);
 }
 
-export async function insert(event: Event): Promise<Event> {
-    const query = pg('event').insert({
-        host_id: event.hostId,
-        co_hosts: event.coHosts,
-        subscribers: event.subscribers,
-        category: event.category,
-        event_name: event.eventName,
-        event_desc: event.eventDesc,
-        pattern: event.pattern,
-        created_at: event.createdAt? toDate(event.createdAt): new Date(),
-        status: event.status,
-    }).returning('*');
-    
-    return (await query).pop();
+export async function getActiveByCity(city: string): Promise<Event[] | undefined> {
+    return pg('event')
+        .select(allFields)
+        .where('location->>city', '=', city)
+        .andWhere('status', '=', 'active')
+        .orderByRaw("COALESCE(location->>'region', '') NULLS FIRST, COALESCE(location->>'city', '')");
 }
 
-export async function update(event: Event): Promise<Event> {
+export async function insert(event: Event): Promise<Event> {
+    const eventId = await pg('event').insert({
+        channel_id: event.channelId,
+        event_name: event.eventName,
+        event_about: event.eventAbout,
+        category: event.category,
+        organizer_id: event.organizerId,
+        created_at: event.createdAt ? toDate(event.createdAt) : new Date(),
+        status: event.status,
+        start_time: toDate(event.startTime),
+        duration: event.duration,
+        location: event.location,
+        max_participants: event.maxParticipants,
+        gender_restriction: event.genderRestriction,
+        age_restriction: event.ageRestriction,
+        auto_approve: event.autoApprove
+    }).returning('event_id');
+    return { ...event, eventId: eventId[0] };
+}
+
+export async function update(event: Event): Promise<void> {
     const query = pg('event').insert({
         event_id: event.eventId,
-        host_id: event.hostId,
-        co_hosts: event.coHosts,
-        subscribers: event.subscribers,
-        category: event.category,
+        channel_id: event.channelId,
         event_name: event.eventName,
-        event_desc: event.eventDesc,
-        pattern: event.pattern,
-        created_at: event.createdAt? toDate(event.createdAt): new Date(),
+        event_about: event.eventAbout,
+        category: event.category,
+        organizer_id: event.organizerId,
+        created_at: event.createdAt ? toDate(event.createdAt) : new Date(),
         status: event.status,
+        start_time: toDate(event.startTime),
+        duration: event.duration,
+        location: event.location,
+        max_participants: event.maxParticipants,
+        gender_restriction: event.genderRestriction,
+        age_restriction: event.ageRestriction,
+        auto_approve: event.autoApprove
     }).onConflict('event_id').merge().returning('*');
-    
-    return (await query).pop();
-}
 
-export async function remove(eventId: string): Promise<void> {
-    await pg('event').where('event_id', '=', eventId).del();
-}
-
-export async function updateStatus(eventId: string, status: string): Promise<Event> {
-    const query = pg('event').where('event_id', '=', eventId).update({
-        status: status,
-    }).returning('*');
-    
-    return (await query).pop();
-}
-
-export async function addCoHost(eventId: string, coHostId: string): Promise<Event> {
-    const query = pg('event').where('event_id', '=', eventId).update({
-        co_hosts: pg.raw(`
-            COALESCE(co_hosts, ARRAY[]::text[]) || ?
-        `, [coHostId]),
-    }).returning('*');
-    
-    return (await query).pop();
-}
-
-export async function removeCoHost(eventId: string, coHostId: string): Promise<Event> {
-    const query = pg('event').where('event_id', '=', eventId).update({
-        co_hosts: pg.raw(`
-            array_remove(co_hosts, ?)
-        `, [coHostId]),
-    }).returning('*');
-    
     return (await query).pop();
 }
 

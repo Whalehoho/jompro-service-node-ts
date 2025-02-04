@@ -4,8 +4,7 @@ import exp from 'constants';
 
 const router = express.Router();
 
-// Event
-router.post('/createEvent', controller.createEvent);
-router.get('/getActiveEvents/:accountId', controller.getActiveEvents);
+// Subscription
+router.get('/getMySubscribed/:subscriberId', controller.getSubscribedBySubscriberId);
 
 export default router;

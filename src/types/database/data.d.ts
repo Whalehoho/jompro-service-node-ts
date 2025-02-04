@@ -1,7 +1,7 @@
 export type Footprint = {
     accountId: string;
     loggedAt: number;
-    action: "login" | "logout" | "signup" | 
+    action: "login" | "logout" | "signup" | "create channel" |
                 "create event" | "cancel event" | 
                 "create session" | "cancel session" | "request to join";
 }
@@ -36,7 +36,7 @@ export type Region = {
 }
 
 export type Channel = {
-    channelId: string;
+    channelId?: string;
     channelName: string;
     channelDesc: string;
     privacy: "public" | "private";
@@ -46,7 +46,7 @@ export type Channel = {
 };
 
 export type Subscription = {
-    subscriptionId: string;
+    subscriptionId?: string;
     subscriberId: string;
     channelId: string;
     status: "subscribed" | "pending" | "rejected" | "unsubscribed";
@@ -54,26 +54,13 @@ export type Subscription = {
     unSubscribedAt?: number;
 };
 
-export type Event = {
+export type Event = { // This is the transitional type, which actually is the session, as now we use channel instead of event
     eventId?: string;
-    hostId: string;
-    coHosts?: string[];
-    subscribers?: string[];
-    category: string;
+    channelId: string;
     eventName: string;
-    eventDesc: string;
-    pattern: "one-time" | "regular";
-    createdAt?: number;
-    status: "active" | "cancelled" | "closed";
-}
-
-export type Session = {
-    eventId: string;
-    sessionId?: string;
-    sessionName: string;
-    sessionDesc: string;
+    eventAbout: string;
     category: string;
-    organizerId: string; // could be host or co-host
+    organizerId: string;
     createdAt?: number;
     status: "active" | "cancelled" | "closed";
     startTime: number;
@@ -86,10 +73,6 @@ export type Session = {
         lng: number;
     };
     maxParticipants: number;
-    participants?: {
-        participantId: string;
-        status: "pending" | "confirmed" | "declined";
-    }[];
     genderRestriction: "none" | "male" | "female";
     ageRestriction: {
         min: number;
@@ -97,3 +80,11 @@ export type Session = {
     };
     autoApprove: boolean;
 }
+
+export type RSVP = {
+    rsvpId?: string;
+    eventId: string;
+    accountId: string;
+    status: "pending" | "confirmed" | "declined";
+}
+
