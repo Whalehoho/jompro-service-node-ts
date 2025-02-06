@@ -7,6 +7,7 @@ import regionRouter from '@/api/region';
 import channelRouter from '@/api/channel';
 import subscriptionRouter from '@/api/subscription';
 import eventRouter from '@/api/event';
+import rsvpRouter from '@/api/rsvp';
 
 
 const router = express.Router();
@@ -22,5 +23,6 @@ router.use('/region', regionRouter);
 router.use('/channel', channelRouter);
 router.use('/subscription', subscriptionRouter);
 router.use('/event', eventRouter);
+router.use('/rsvp', rsvpRouter);
 
 export default router;

@@ -22,14 +22,15 @@ const log = logger('LOADER', 'API');
 const app = express();
 
 app.set('trust proxy', true);
-app.use(cors());
+// app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(cookieParser());
 app.use(express.json());
 
 app.use('/', router);
 
 app.use('/', router);
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
     log.info(
         `API Server started @${port}. Listening to routes:`,
         listEndpoints(app)

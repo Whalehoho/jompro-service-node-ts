@@ -6,5 +6,6 @@ const router = express.Router();
 
 // Subscription
 router.get('/getMySubscribed/:subscriberId', controller.getSubscribedBySubscriberId);
+router.get('/getSubscribedByChannelId/:channelId', controller.getSubscribedByChannelId);
 
 export default router;

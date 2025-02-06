@@ -64,6 +64,17 @@ export const remove: API.Remove = async function (request, response) {
     }
 }
 
+export const getProfileUrlbyAccountId: API.GetProfileUrlbyAccountId = async function (request, response) {
+    const { accountId } = request.params;
+    try {
+        const data = await db.user.getProfileUrlbyAccountId(accountId);
+        success(response, { data });
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}
+
 export const updateProfileImg: API.UpdateProfileImg = async function (request, response) {
     const { 
         email, 

@@ -29,3 +29,14 @@ export const getPendingBySubscriberId: API.GetPendingBySubscriberId = async func
         failure(response, e.message);
     }
 }
+
+export const getSubscribedByChannelId: API.GetSubscribedByChannelId = async function (request, response) {
+    const { channelId } = request.params;
+    try {
+        const data = await db.subscription.getByChannelId(channelId);
+        success(response, { data });
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}

@@ -10,5 +10,6 @@ router.put('/', controller.update);
 router.get('/remove/:email', controller.remove);
 router.put('/updateProfileImg', controller.updateProfileImg);
 router.put('/updateProfile', controller.updateProfile);
+router.get('/getProfileUrlbyAccountId/:accountId', controller.getProfileUrlbyAccountId);
 
 export default router;

@@ -38,3 +38,14 @@ export const getActiveEvents: API.GetActiveEvents = async function (request, res
         failure(response, e.message);
     }
 }
+
+export const getById: API.GetById = async function (request, response) {
+    try {
+        const { eventId } = request.params;
+        const data = await db.event.getById(eventId);
+        success(response, { data });
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}

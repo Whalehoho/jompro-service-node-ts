@@ -19,7 +19,7 @@ export async function create(): Promise<void> {
         await pg.schema.createTable('channel', function (table) {
             table.bigIncrements('channel_id').primary();
             table.string('channel_name').notNullable();
-            table.string('channel_desc').notNullable();
+            table.text('channel_desc').notNullable();
             table.string('privacy').notNullable();
             table.string('owner_id').notNullable();
             table.string('category').notNullable();

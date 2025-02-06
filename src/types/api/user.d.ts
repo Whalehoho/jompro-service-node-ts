@@ -26,3 +26,5 @@ export type UpdateProfile = Controller<
         gender: string;
     }
 >;
+
+export type GetProfileUrlbyAccountId = Controller<{ data: string | undefined }, { accountId: string }>;

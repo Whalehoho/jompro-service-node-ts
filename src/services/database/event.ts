@@ -30,7 +30,7 @@ export async function create(): Promise<void> {
             table.bigIncrements('event_id').primary();
             table.string('channel_id').notNullable();
             table.string('event_name').notNullable();
-            table.string('event_about').notNullable();
+            table.text('event_about').notNullable();
             table.string('category').notNullable();
             table.string('organizer_id').notNullable();
             table.timestamp('created_at', { useTz: true }).defaultTo(pg.fn.now()).notNullable();

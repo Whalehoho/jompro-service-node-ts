@@ -43,6 +43,10 @@ export async function getByAccountId(accountId: string): Promise<User | undefine
     return pg('user').select(allFields).where('account_id', '=', accountId).first();
 }
 
+export async function getProfileUrlbyAccountId(accountId: string): Promise<string | undefined> {
+    return pg('user').select('profile_img_url').where('account_id', '=', accountId).first();
+}
+
 export async function update(user: User): Promise<User> {
     const query = pg('user').insert({
         account_id: user.accountId,

@@ -7,5 +7,6 @@ const router = express.Router();
 // Event
 router.post('/createEvent', controller.createEvent);
 router.get('/getActiveEvents/:accountId', controller.getActiveEvents);
+router.get('/getById/:eventId', controller.getById);
 
 export default router;
