@@ -8,5 +8,6 @@ const router = express.Router();
 router.post('/createEvent', controller.createEvent);
 router.get('/getActiveEvents/:accountId', controller.getActiveEvents);
 router.get('/getById/:eventId', controller.getById);
+router.get('/getActiveEventsByChannelId/:channelId', controller.getActiveEventsByChannelId);
 
 export default router;

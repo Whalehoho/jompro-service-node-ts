@@ -49,7 +49,7 @@ export type Subscription = {
     subscriptionId?: string;
     subscriberId: string;
     channelId: string;
-    status: "subscribed" | "pending" | "rejected" | "unsubscribed";
+    status: "pending" | "subscribed";
     subscribedAt?: number;
     unSubscribedAt?: number;
 };
@@ -85,6 +85,6 @@ export type RSVP = {
     rsvpId?: string;
     eventId: string;
     accountId: string;
-    status: "pending" | "confirmed" | "declined";
+    status: "pending" | "approved";
 }
 

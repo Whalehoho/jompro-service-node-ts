@@ -35,6 +35,14 @@ export async function getByEventId(eventId: string): Promise<RSVP[] | undefined>
     return pg('rsvp').select(allFields).where('event_id', '=', eventId);
 }
 
+export async function getApprovedByEventId(eventId: string): Promise<RSVP[] | undefined> {
+    return pg('rsvp').select(allFields).where('event_id', '=', eventId).andWhere('status', '=', 'approved');
+}
+
+export async function getPendingByEventId(eventId: string): Promise<RSVP[] | undefined> {
+    return pg('rsvp').select(allFields).where('event_id', '=', eventId).andWhere('status', '=', 'pending');
+}
+
 export async function getByAccountId(accountId: string): Promise<RSVP[] | undefined> {
     return pg('rsvp').select(allFields).where('account_id', '=', accountId);
 }
@@ -62,7 +70,13 @@ export async function insert(rsvp: RSVP): Promise<RSVP> {
         status: rsvp.status,
     }).returning('*');
 
-    return (await query).pop();
+    const result = (await query).pop();
+    return {
+        rsvpId: result.rsvp_id,
+        eventId: result.event_id,
+        accountId: result.account_id,
+        status: result.status,
+    }
 }
 
 export async function update(rsvp: RSVP): Promise<RSVP> {
@@ -73,6 +87,17 @@ export async function update(rsvp: RSVP): Promise<RSVP> {
         status: rsvp.status,
     }).onConflict('rsvp_id').merge().returning('*');
 
+    const result = (await query).pop();
+    return {
+        rsvpId: result.rsvp_id,
+        eventId: result.event_id,
+        accountId: result.account_id,
+        status: result.status,
+    }
+}
+
+export async function approve(rsvpId: string): Promise<string> {
+    const query = pg('rsvp').update({ status: 'approved' }).where('rsvp_id', '=', rsvpId).returning('rsvp_id');
     return (await query).pop();
 }
 

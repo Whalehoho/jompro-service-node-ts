@@ -64,17 +64,25 @@ export async function getBySubscriberIdAndChannelId(subscriberId: string, channe
 }
 
 export async function insert(subscription: Subscription): Promise<Subscription> {
-    const subscriptionId = await pg('subscription').insert({
+    const query = pg('subscription').insert({
         subscriber_id: subscription.subscriberId,
         channel_id: subscription.channelId,
         status: subscription.status,
         subscribed_at: subscription.subscribedAt ? toDate(subscription.subscribedAt) : null,
         un_subscribed_at: subscription.unSubscribedAt ? toDate(subscription.unSubscribedAt) : null,
-    }).returning('subscription_id');
-    return { ...subscription, subscriptionId: subscriptionId[0] };
+    }).returning('*');
+    const result = (await query).pop();
+    return {
+        subscriptionId: result.subscription_id,
+        subscriberId: result.subscriber_id,
+        channelId: result.channel_id,
+        status: result.status,
+        subscribedAt: result.subscribed_at,
+        unSubscribedAt: result.un_subscribed_at,
+    }
 }
 
-export async function update(subscription: Subscription): Promise<void> {
+export async function update(subscription: Subscription): Promise<Subscription> {
     const query = pg('subscription').insert({
         subscription_id: subscription.subscriptionId,
         subscriber_id: subscription.subscriberId,
@@ -83,7 +91,24 @@ export async function update(subscription: Subscription): Promise<void> {
         subscribed_at: subscription.subscribedAt ? toDate(subscription.subscribedAt) : null,
         un_subscribed_at: subscription.unSubscribedAt ? toDate(subscription.unSubscribedAt) : null,
     }).onConflict('subscription_id').merge().returning('*');
+    const result = (await query).pop();
+    return {
+        subscriptionId: result.subscription_id,
+        subscriberId: result.subscriber_id,
+        channelId: result.channel_id,
+        status: result.status,
+        subscribedAt: result.subscribed_at,
+        unSubscribedAt: result.un_subscribed_at,
+    }
+}
+
+export async function approve(subscriptionId: string): Promise<string> {
+    const query = pg('subscription').update({ status: 'subscribed' }).where('subscription_id', '=', subscriptionId).returning('subscription_id');
     return (await query).pop();
+}
+
+export async function remove(subscriptionId: string): Promise<void> {
+    await pg('subscription').delete().where('subscription_id', '=', subscriptionId);
 }
 
 export async function main(): Promise<void> {

@@ -49,3 +49,14 @@ export const getById: API.GetById = async function (request, response) {
         failure(response, e.message);
     }
 }
+
+export const getActiveEventsByChannelId: API.GetActiveEventsByChannelId = async function (request, response) {
+    try {
+        const { channelId } = request.params;
+        const data = await db.event.getActiveByChannelId(channelId);
+        success(response, { data });
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}

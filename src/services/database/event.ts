@@ -92,8 +92,9 @@ export async function getActiveByChannelId(channelId: string): Promise<Event[] |
         .select(allFields)
         .where('channel_id', '=', channelId)
         .andWhere('status', '=', 'active')
-        .orderByRaw("COALESCE(location->>'region', '') NULLS FIRST, COALESCE(location->>'city', '')");
+        .orderBy('start_time', 'desc'); 
 }
+
 
 export async function getByCity(city: string): Promise<Event[] | undefined> {
     return pg('event').select(allFields).where('location->>city', '=', city);
