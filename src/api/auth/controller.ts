@@ -59,6 +59,7 @@ export const login: API.Login = async function (request, response) {
         if (await comparePassword(user.password, data.passwordHash)) {
             console.log('success');
             const token = jwt.sign(
+                // UserId is used to verify if the sensitive data accessed by user is his own data, but this project does not have such data so it is not used.
                 { userId: data.accountId, email: data.email },  // Payload
                 SECRET_KEY,  // Secret key
                 { expiresIn: '7h' }  // Token expiration time 

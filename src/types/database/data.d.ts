@@ -88,3 +88,10 @@ export type RSVP = {
     status: "pending" | "approved";
 }
 
+export type Chat = {
+    chatId?: string;
+    channelId: string;
+    senderId: string;
+    message: string;
+    sentAt?: number;
+}
