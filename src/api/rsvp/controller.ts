@@ -30,6 +30,17 @@ export const getApprovedByEventId: API.GetApprovedByEventId = async function (re
     }
 }
 
+export const getApprovedByAccountId: API.GetApprovedByAccountId = async function (request, response) {
+    try {
+        const { accountId } = request.params;
+        const data = await db.rsvp.getApprovedByAccountId(accountId);
+        success(response, { data });
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}
+
 export const getPendingByEventId: API.GetPendingByEventId = async function (request, response) {
     try {
         const { eventId } = request.params;

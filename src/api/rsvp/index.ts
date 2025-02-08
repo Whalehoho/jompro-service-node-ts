@@ -7,6 +7,7 @@ const router = express.Router();
 // RSVP
 router.get('/getByEventId/:eventId', controller.getByEventId);
 router.get('/getApprovedByEventId/:eventId', controller.getApprovedByEventId);
+router.get('/getApprovedByAccountId/:accountId', controller.getApprovedByAccountId);
 router.get('/getPendingByEventId/:eventId', controller.getPendingByEventId);
 router.get('/getByEventIdAndAccountId/:eventId/:accountId', controller.getByEventIdAndAccountId);
 router.post('/create', controller.create);

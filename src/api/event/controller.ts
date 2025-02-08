@@ -39,6 +39,17 @@ export const getActiveEvents: API.GetActiveEvents = async function (request, res
     }
 }
 
+export const getActiveByEventId: API.GetActiveByEventId = async function (request, response) {
+    try {
+        const { eventId } = request.params;
+        const data = await db.event.getActiveByEventId(eventId);
+        success(response, { data });
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}
+
 export const getById: API.GetById = async function (request, response) {
     try {
         const { eventId } = request.params;
@@ -54,6 +65,17 @@ export const getActiveEventsByChannelId: API.GetActiveEventsByChannelId = async 
     try {
         const { channelId } = request.params;
         const data = await db.event.getActiveByChannelId(channelId);
+        success(response, { data });
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}
+
+export const getActiveEventsByOrganizerId: API.GetActiveEventsByOrganizerId = async function (request, response) {
+    try {
+        const { organizerId } = request.params;
+        const data = await db.event.getActiveByOrganizerId(organizerId);
         success(response, { data });
     } catch (e) {
         log.error(e);

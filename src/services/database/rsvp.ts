@@ -39,6 +39,10 @@ export async function getApprovedByEventId(eventId: string): Promise<RSVP[] | un
     return pg('rsvp').select(allFields).where('event_id', '=', eventId).andWhere('status', '=', 'approved');
 }
 
+export async function getApprovedByAccountId(accountId: string): Promise<RSVP[] | undefined> {
+    return pg('rsvp').select(allFields).where('account_id', '=', accountId).andWhere('status', '=', 'approved');
+}
+
 export async function getPendingByEventId(eventId: string): Promise<RSVP[] | undefined> {
     return pg('rsvp').select(allFields).where('event_id', '=', eventId).andWhere('status', '=', 'pending');
 }

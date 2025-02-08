@@ -95,6 +95,51 @@ export async function getActiveByChannelId(channelId: string): Promise<Event[] |
         .orderBy('start_time', 'desc'); 
 }
 
+export async function getActiveByEventId(eventId: string): Promise<Event | undefined> {
+    const query = pg('event').select(allFields).where('event_id', '=', eventId).andWhere('status', '=', 'active');
+    const result = (await query).pop();
+    return {
+        eventId: result.eventId,
+        channelId: result.channelId,
+        eventName: result.eventName,
+        eventAbout: result.eventAbout,
+        category: result.category,
+        organizerId: result.organizerId,
+        createdAt: result.createdAt,
+        status: result.status,
+        startTime: result.startTime,
+        duration: result.duration,
+        location: result.location,
+        maxParticipants: result.maxParticipants,
+        genderRestriction: result.genderRestriction,
+        ageRestriction: result.ageRestriction,
+        autoApprove: result.autoApprove
+    };
+}
+
+export async function getActiveByOrganizerId(organizerId: string): Promise<Event[] | undefined> {
+    const query = pg('event').select(allFields).where('organizer_id', '=', organizerId).andWhere('status', '=', 'active');
+    return (await query).map((result) => {
+        return {
+            eventId: result.eventId,
+            channelId: result.channelId,
+            eventName: result.eventName,
+            eventAbout: result.eventAbout,
+            category: result.category,
+            organizerId: result.organizerId,
+            createdAt: result.createdAt,
+            status: result.status,
+            startTime: result.startTime,
+            duration: result.duration,
+            location: result.location,
+            maxParticipants: result.maxParticipants,
+            genderRestriction: result.genderRestriction,
+            ageRestriction: result.ageRestriction,
+            autoApprove: result.autoApprove
+        };
+    });
+}
+
 
 export async function getByCity(city: string): Promise<Event[] | undefined> {
     return pg('event').select(allFields).where('location->>city', '=', city);
