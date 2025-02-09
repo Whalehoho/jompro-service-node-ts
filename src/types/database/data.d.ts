@@ -93,5 +93,6 @@ export type Chat = {
     channelId: string;
     senderId: string;
     message: string;
+    type: "text" | "image" | "event";
     sentAt?: number;
 }

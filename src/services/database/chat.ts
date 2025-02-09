@@ -8,6 +8,7 @@ const f: Record<keyof Chat, string> = {
     channelId: 'channel_id',
     senderId: 'sender_id',
     message: 'message',
+    type: 'type',
     sentAt: 'sent_at',
 };
 
@@ -20,6 +21,7 @@ export async function create(): Promise<void> {
             table.string('channel_id').notNullable();
             table.string('sender_id').notNullable();
             table.text('message').notNullable();
+            table.string('type').defaultTo('text').notNullable();
             table.timestamp('sent_at', { useTz: true }).defaultTo(pg.fn.now()).notNullable();
         });
         await pg.raw("ALTER SEQUENCE chat_chat_id_seq RESTART WITH 1");
@@ -34,6 +36,7 @@ export async function getHistoryChannelId(channelId: string): Promise<Chat[] | u
             channelId: result.channelId,
             senderId: result.senderId,
             message: result.message,
+            type: result.type,
             sentAt: result.sentAt,
         };
     });
@@ -44,6 +47,8 @@ export async function insert(chat: Chat): Promise<string> {
         channel_id: chat.channelId,
         sender_id: chat.senderId,
         message: chat.message,
+        type: chat.type,
+        sent_at: chat.sentAt? toDate(chat.sentAt): pg.fn.now(),
     }).returning('chat_id');
     return result[0];
 }
