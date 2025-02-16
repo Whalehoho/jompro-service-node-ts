@@ -14,11 +14,11 @@ export type updateDefault = Controller<{ data: string }, never, Region>;
 export type addAddress = Controller<
   { data: string },
   { accountId: string },
-  { addressData: { fullAddress: string; city: string; region: string; lat: number; lng: number } }
+  { addressData: { fullAddress: string; state: string; city: string; region: string; lat: number; lng: number } }
 >;
 
 export type removeAddress = Controller<
   { data: string },
   { accountId: string },
-  { addressData: { fullAddress: string; city: string; region: string; lat: number; lng: number } }
+  { addressData: { fullAddress: string; state: string; city: string; region: string; lat: number; lng: number } }
 >;

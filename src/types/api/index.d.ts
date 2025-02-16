@@ -2,6 +2,7 @@ import type e from 'express';
 import type { ParamsDictionary, Query } from 'express-serve-static-core';
 
 export type Config = {
+    host?: string;
     port: number;
 };
 

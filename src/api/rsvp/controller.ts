@@ -5,6 +5,8 @@ import { success, failure } from '@/api/util';
 import * as db from '@/services/database';
 import { RSVP } from '~/database/data';
 import { now } from '@/util';
+import { addEvent } from '@/services/event_recommender';
+import { title } from 'process';
 
 const log = logger('API', 'PROD');
 
@@ -69,6 +71,19 @@ export const create: API.Create = async function (request, response) {
         const data = await db.rsvp.insert(rsvp);
         console.log('Create RSVP', data);
         success(response, { data });
+
+        // Get event details
+        const event = await db.event.getById(rsvp.eventId);
+        if (!event) return;
+        const eventData = {
+            user_id: rsvp.accountId,
+            event_id: rsvp.eventId,
+            title: event.eventName,
+            description: event.eventAbout,
+        };
+        await addEvent(eventData);
+
+
     } catch (e) {
         log.error(e);
         failure(response, e.message);

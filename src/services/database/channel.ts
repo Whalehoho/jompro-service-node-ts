@@ -110,6 +110,9 @@ export async function updatePrivacy(channelId: string, privacy: string): Promise
     return (await query).pop();
 }
 
+export async function search(query: string): Promise<Channel[] | undefined> {
+    return pg('channel').select(allFields).where('channel_name', 'ilike', `%${query}%`);
+}
 
 
 export async function main(): Promise<void> {

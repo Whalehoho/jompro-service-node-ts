@@ -67,6 +67,7 @@ export const addAddress: API.addAddress = async function (request, response) {
     const { accountId } = request.params;
     const addressData = request.body as unknown as { 
         fullAddress: string; 
+        state: string;
         city: string; 
         region: string; 
         lat: number; 
@@ -87,6 +88,7 @@ export const removeAddress: API.removeAddress = async function (request, respons
     const { accountId } = request.params;
     const addressData = request.body as unknown as {
         fullAddress: string;
+        state: string;
         city: string;
         region: string;
         lat: number;

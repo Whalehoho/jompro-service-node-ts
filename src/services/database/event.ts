@@ -98,6 +98,7 @@ export async function getActiveByChannelId(channelId: string): Promise<Event[] |
 export async function getActiveByEventId(eventId: string): Promise<Event | undefined> {
     const query = pg('event').select(allFields).where('event_id', '=', eventId).andWhere('status', '=', 'active');
     const result = (await query).pop();
+    if(!result) return undefined;
     return {
         eventId: result.eventId,
         channelId: result.channelId,
@@ -158,24 +159,28 @@ export async function getActiveByCity(city: string): Promise<Event[] | undefined
 }
 
 export async function insert(event: Event): Promise<Event> {
-    const eventId = await pg('event').insert({
-        channel_id: event.channelId,
-        event_name: event.eventName,
-        event_about: event.eventAbout,
-        category: event.category,
-        organizer_id: event.organizerId,
-        created_at: event.createdAt ? toDate(event.createdAt) : new Date(),
-        status: event.status,
-        start_time: toDate(event.startTime),
-        duration: event.duration,
-        location: event.location,
-        max_participants: event.maxParticipants,
-        gender_restriction: event.genderRestriction,
-        age_restriction: event.ageRestriction,
-        auto_approve: event.autoApprove
-    }).returning('event_id');
-    return { ...event, eventId: eventId[0] };
+    const [inserted] = await pg('event')
+        .insert({
+            channel_id: event.channelId,
+            event_name: event.eventName,
+            event_about: event.eventAbout,
+            category: event.category,
+            organizer_id: event.organizerId,
+            created_at: event.createdAt ? toDate(event.createdAt) : new Date(),
+            status: event.status,
+            start_time: toDate(event.startTime),
+            duration: event.duration,
+            location: event.location,
+            max_participants: event.maxParticipants,
+            gender_restriction: event.genderRestriction,
+            age_restriction: event.ageRestriction,
+            auto_approve: event.autoApprove
+        })
+        .returning('event_id');
+
+    return { ...event, eventId: inserted.event_id };
 }
+
 
 export async function update(event: Event): Promise<void> {
     const query = pg('event').insert({
@@ -198,6 +203,11 @@ export async function update(event: Event): Promise<void> {
 
     return (await query).pop();
 }
+
+export async function search(query: string): Promise<Event[] | undefined> {
+    return pg('event').select(allFields).where('event_name', 'ilike', `%${query}%`);
+}
+
 
 export async function main(): Promise<void> {
     await create();

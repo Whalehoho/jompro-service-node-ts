@@ -21,6 +21,7 @@ export type Region = {
     accountId: string;
     defaultAddress?: {
         fullAddress: string;
+        state: string;
         city: string;
         region: string;
         lat: number;
@@ -28,6 +29,7 @@ export type Region = {
     };
     addresses?: {
         fullAddress: string;
+        state: string;
         city: string;
         region: string;
         lat: number;
@@ -67,6 +69,7 @@ export type Event = { // This is the transitional type, which actually is the se
     duration: number;
     location: {
         fullAddress: string;
+        state: string;
         city: string;
         region: string;
         lat: number;

@@ -50,7 +50,7 @@ export async function updateDefault(region: Region): Promise<Region> {
     return (await query).pop();
 }
 
-export async function addAddress(accountId: string, address: { fullAddress: string, city: string, region: string, lat: number, lng: number }): Promise<string> {
+export async function addAddress(accountId: string, address: { fullAddress: string, state: string, city: string, region: string, lat: number, lng: number }): Promise<string> {
     try {
         // Use pg driver to handle escaping and JSON formatting
         const result = await pg('region')
@@ -86,7 +86,7 @@ export async function addAddress(accountId: string, address: { fullAddress: stri
 
 
 
-export async function removeAddress(accountId: string, address: { fullAddress: string, city: string, region: string, lat: number, lng: number }): Promise<void> {
+export async function removeAddress(accountId: string, address: { fullAddress: string, state: string, city: string, region: string, lat: number, lng: number }): Promise<void> {
     const addressToRemove = JSON.stringify(address).replace(/'/g, "''"); // Escape single quotes if necessary
 
     await pg.raw(`

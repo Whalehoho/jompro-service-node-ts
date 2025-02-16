@@ -5,6 +5,8 @@ import { success, failure } from '@/api/util';
 import * as db from '@/services/database';
 import { Event } from '~/database/data';
 import { now } from '@/util';
+import { addEvent } from '@/services/event_recommender';
+import { title } from 'process';
 
 const log = logger('API', 'PROD');
 
@@ -13,6 +15,18 @@ export const createEvent: API.CreateEvent = async function (request, response) {
     try {
         const data = await db.event.insert(event);
         success(response, { data });
+
+        console.log('data.eventid',data);
+
+        // Add event to event recommender
+        const eventRecommenderData = {
+            user_id: event.organizerId,
+            event_id: data.eventId,
+            title: event.eventName,
+            description: event.eventAbout,
+        };
+        await addEvent(eventRecommenderData);
+
         // Logging
         if(!event.organizerId || !data) {
             return;
@@ -22,6 +36,17 @@ export const createEvent: API.CreateEvent = async function (request, response) {
             loggedAt: now(),
             action: 'create event'
         });
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}
+
+export const getByAccountId: API.GetByAccountId = async function (request, response) {
+    try {
+        const { accountId } = request.params;
+        const data = await db.event.getByOrganizerId(accountId);
+        success(response, { data });
     } catch (e) {
         log.error(e);
         failure(response, e.message);
