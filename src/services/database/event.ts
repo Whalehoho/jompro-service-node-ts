@@ -12,10 +12,10 @@ const f: Record<keyof Event, string> = {
     category: 'category',
     organizerId: 'organizer_id',
     createdAt: 'created_at',
-    status: 'status',
+    eventStatus: 'event_status',
     startTime: 'start_time',
-    duration: 'duration',
-    location: 'location',
+    eventDuration: 'event_duration',
+    eventLocation: 'event_location',
     maxParticipants: 'max_participants',
     genderRestriction: 'gender_restriction',
     ageRestriction: 'age_restriction',
@@ -25,8 +25,8 @@ const f: Record<keyof Event, string> = {
 const allFields = Object.values(f).map((a) => `${a} as ${toCamel(a)}`);
 
 export async function create(): Promise<void> {
-    if (!(await pg.schema.hasTable('event'))) {
-        await pg.schema.createTable('event', function (table) {
+    if (!(await pg.schema.hasTable('EVENT_T'))) {
+        await pg.schema.createTable('EVENT_T', function (table) {
             table.bigIncrements('event_id').primary();
             table.string('channel_id').notNullable();
             table.string('event_name').notNullable();
@@ -34,10 +34,10 @@ export async function create(): Promise<void> {
             table.string('category').notNullable();
             table.string('organizer_id').notNullable();
             table.timestamp('created_at', { useTz: true }).defaultTo(pg.fn.now()).notNullable();
-            table.string('status').notNullable();
+            table.string('event_status').notNullable();
             table.timestamp('start_time', { useTz: true }).notNullable();
-            table.integer('duration').notNullable();
-            table.jsonb('location').notNullable();
+            table.integer('event_duration').notNullable();
+            table.jsonb('event_location').notNullable();
             table.integer('max_participants').notNullable();
             table.string('gender_restriction').notNullable();
             table.jsonb('age_restriction').notNullable();
@@ -48,55 +48,55 @@ export async function create(): Promise<void> {
 }
 
 export async function all(): Promise<Event[] | undefined> {
-    return pg('event').select(allFields);
+    return pg('EVENT_T').select(allFields);
 }
 
 export async function allActive(userId: string): Promise<Event[] | undefined> {
-    return pg('event')
+    return pg('EVENT_T')
         .select(allFields)
-        .where('status', '=', 'active')
+        .where('event_status', '=', 'active')
         .andWhere('organizer_id', '!=', userId)
-        .orderByRaw("COALESCE(location->>'region', '') NULLS FIRST, COALESCE(location->>'city', '')");
+        .orderByRaw("COALESCE(event_location->>'region', '') NULLS FIRST, COALESCE(event_location->>'city', '')");
 }
 
 export async function getById(eventId: string): Promise<Event | undefined> {
-    return pg('event').select(allFields).where('event_id', '=', eventId).first();
+    return pg('EVENT_T').select(allFields).where('event_id', '=', eventId).first();
 }
 
 export async function getByChannelId(channelId: string): Promise<Event[] | undefined> {
-    return pg('event').select(allFields).where('channel_id', '=', channelId);
+    return pg('EVENT_T').select(allFields).where('channel_id', '=', channelId);
 }
 
 export async function getByOrganizerId(organizerId: string): Promise<Event[] | undefined> {
-    return pg('event').select(allFields).where('organizer_id', '=', organizerId);
+    return pg('EVENT_T').select(allFields).where('organizer_id', '=', organizerId);
 }
 
 export async function getByChannelIdAndOrganizerId(channelId: string, organizerId: string): Promise<Event | undefined> {
-    return pg('event').select(allFields).where('channel_id', '=', channelId).andWhere('organizer_id', '=', organizerId).first();
+    return pg('EVENT_T').select(allFields).where('channel_id', '=', channelId).andWhere('organizer_id', '=', organizerId).first();
 }
 
-export async function getByChannelIdAndStatus(channelId: string, status: string): Promise<Event[] | undefined> {
-    return pg('event').select(allFields).where('channel_id', '=', channelId).andWhere('status', '=', status);
+export async function getByChannelIdAndStatus(channelId: string, eventStatus: string): Promise<Event[] | undefined> {
+    return pg('EVENT_T').select(allFields).where('channel_id', '=', channelId).andWhere('event_status', '=', eventStatus);
 }
 
-export async function getByOrganizerIdAndStatus(organizerId: string, status: string): Promise<Event[] | undefined> {
-    return pg('event').select(allFields).where('organizer_id', '=', organizerId).andWhere('status', '=', status);
+export async function getByOrganizerIdAndStatus(organizerId: string, eventStatus: string): Promise<Event[] | undefined> {
+    return pg('EVENT_T').select(allFields).where('organizer_id', '=', organizerId).andWhere('event_status', '=', eventStatus);
 }
 
-export async function getByChannelIdAndOrganizerIdAndStatus(channelId: string, organizerId: string, status: string): Promise<Event | undefined> {
-    return pg('event').select(allFields).where('channel_id', '=', channelId).andWhere('organizer_id', '=', organizerId).andWhere('status', '=', status).first();
+export async function getByChannelIdAndOrganizerIdAndStatus(channelId: string, organizerId: string, eventStatus: string): Promise<Event | undefined> {
+    return pg('EVENT_T').select(allFields).where('channel_id', '=', channelId).andWhere('organizer_id', '=', organizerId).andWhere('event_status', '=', eventStatus).first();
 }
 
 export async function getActiveByChannelId(channelId: string): Promise<Event[] | undefined> {
-    return pg('event')
+    return pg('EVENT_T')
         .select(allFields)
         .where('channel_id', '=', channelId)
-        .andWhere('status', '=', 'active')
+        .andWhere('event_status', '=', 'active')
         .orderBy('start_time', 'desc'); 
 }
 
 export async function getActiveByEventId(eventId: string): Promise<Event | undefined> {
-    const query = pg('event').select(allFields).where('event_id', '=', eventId).andWhere('status', '=', 'active');
+    const query = pg('EVENT_T').select(allFields).where('event_id', '=', eventId).andWhere('event_status', '=', 'active');
     const result = (await query).pop();
     if(!result) return undefined;
     return {
@@ -107,10 +107,10 @@ export async function getActiveByEventId(eventId: string): Promise<Event | undef
         category: result.category,
         organizerId: result.organizerId,
         createdAt: result.createdAt,
-        status: result.status,
+        eventStatus: result.eventStatus,
         startTime: result.startTime,
-        duration: result.duration,
-        location: result.location,
+        eventDuration: result.eventDuration,
+        eventLocation: result.eventLocation,
         maxParticipants: result.maxParticipants,
         genderRestriction: result.genderRestriction,
         ageRestriction: result.ageRestriction,
@@ -119,7 +119,7 @@ export async function getActiveByEventId(eventId: string): Promise<Event | undef
 }
 
 export async function getActiveByOrganizerId(organizerId: string): Promise<Event[] | undefined> {
-    const query = pg('event').select(allFields).where('organizer_id', '=', organizerId).andWhere('status', '=', 'active');
+    const query = pg('EVENT_T').select(allFields).where('organizer_id', '=', organizerId).andWhere('event_status', '=', 'active');
     return (await query).map((result) => {
         return {
             eventId: result.eventId,
@@ -129,10 +129,10 @@ export async function getActiveByOrganizerId(organizerId: string): Promise<Event
             category: result.category,
             organizerId: result.organizerId,
             createdAt: result.createdAt,
-            status: result.status,
+            eventStatus: result.eventStatus,
             startTime: result.startTime,
-            duration: result.duration,
-            location: result.location,
+            eventDuration: result.eventDuration,
+            eventLocation: result.eventLocation,
             maxParticipants: result.maxParticipants,
             genderRestriction: result.genderRestriction,
             ageRestriction: result.ageRestriction,
@@ -143,23 +143,23 @@ export async function getActiveByOrganizerId(organizerId: string): Promise<Event
 
 
 export async function getByCity(city: string): Promise<Event[] | undefined> {
-    return pg('event').select(allFields).where('location->>city', '=', city);
+    return pg('EVENT_T').select(allFields).where('event_location->>city', '=', city);
 }
 
 export async function getByCategory(category: string): Promise<Event[] | undefined> {
-    return pg('event').select(allFields).where('category', '=', category);
+    return pg('EVENT_T').select(allFields).where('category', '=', category);
 }
 
 export async function getActiveByCity(city: string): Promise<Event[] | undefined> {
-    return pg('event')
+    return pg('EVENT_T')
         .select(allFields)
-        .where('location->>city', '=', city)
-        .andWhere('status', '=', 'active')
-        .orderByRaw("COALESCE(location->>'region', '') NULLS FIRST, COALESCE(location->>'city', '')");
+        .where('event_location->>city', '=', city)
+        .andWhere('event_status', '=', 'active')
+        .orderByRaw("COALESCE(event_location->>'region', '') NULLS FIRST, COALESCE(event_location->>'city', '')");
 }
 
 export async function insert(event: Event): Promise<Event> {
-    const [inserted] = await pg('event')
+    const [inserted] = await pg('EVENT_T')
         .insert({
             channel_id: event.channelId,
             event_name: event.eventName,
@@ -167,10 +167,10 @@ export async function insert(event: Event): Promise<Event> {
             category: event.category,
             organizer_id: event.organizerId,
             created_at: event.createdAt ? toDate(event.createdAt) : new Date(),
-            status: event.status,
+            event_status: event.eventStatus,
             start_time: toDate(event.startTime),
-            duration: event.duration,
-            location: event.location,
+            event_duration: event.eventDuration,
+            event_location: event.eventLocation,
             max_participants: event.maxParticipants,
             gender_restriction: event.genderRestriction,
             age_restriction: event.ageRestriction,
@@ -183,7 +183,7 @@ export async function insert(event: Event): Promise<Event> {
 
 
 export async function update(event: Event): Promise<void> {
-    const query = pg('event').insert({
+    const query = pg('EVENT_T').insert({
         event_id: event.eventId,
         channel_id: event.channelId,
         event_name: event.eventName,
@@ -191,10 +191,10 @@ export async function update(event: Event): Promise<void> {
         category: event.category,
         organizer_id: event.organizerId,
         created_at: event.createdAt ? toDate(event.createdAt) : new Date(),
-        status: event.status,
+        event_status: event.eventStatus,
         start_time: toDate(event.startTime),
-        duration: event.duration,
-        location: event.location,
+        event_duration: event.eventDuration,
+        event_location: event.eventLocation,
         max_participants: event.maxParticipants,
         gender_restriction: event.genderRestriction,
         age_restriction: event.ageRestriction,
@@ -205,7 +205,7 @@ export async function update(event: Event): Promise<void> {
 }
 
 export async function search(query: string): Promise<Event[] | undefined> {
-    return pg('event').select(allFields).where('event_name', 'ilike', `%${query}%`);
+    return pg('EVENT_T').select(allFields).where('event_name', 'ilike', `%${query}%`);
 }
 
 

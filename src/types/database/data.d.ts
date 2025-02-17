@@ -64,10 +64,10 @@ export type Event = { // This is the transitional type, which actually is the se
     category: string;
     organizerId: string;
     createdAt?: number;
-    status: "active" | "cancelled" | "closed";
+    eventStatus: "active" | "cancelled" | "closed";
     startTime: number;
-    duration: number;
-    location: {
+    eventDuration: number;
+    eventLocation: {
         fullAddress: string;
         state: string;
         city: string;
