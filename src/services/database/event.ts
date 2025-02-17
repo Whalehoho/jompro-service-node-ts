@@ -51,11 +51,11 @@ export async function all(): Promise<Event[] | undefined> {
     return pg('event').select(allFields);
 }
 
-export async function allActive(accountId: string): Promise<Event[] | undefined> {
+export async function allActive(userId: string): Promise<Event[] | undefined> {
     return pg('event')
         .select(allFields)
         .where('status', '=', 'active')
-        .andWhere('organizer_id', '!=', accountId)
+        .andWhere('organizer_id', '!=', userId)
         .orderByRaw("COALESCE(location->>'region', '') NULLS FIRST, COALESCE(location->>'city', '')");
 }
 

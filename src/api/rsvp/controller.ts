@@ -34,8 +34,8 @@ export const getApprovedByEventId: API.GetApprovedByEventId = async function (re
 
 export const getApprovedByAccountId: API.GetApprovedByAccountId = async function (request, response) {
     try {
-        const { accountId } = request.params;
-        const data = await db.rsvp.getApprovedByAccountId(accountId);
+        const { userId } = request.params;
+        const data = await db.rsvp.getApprovedByAccountId(userId);
         success(response, { data });
     } catch (e) {
         log.error(e);
@@ -55,9 +55,9 @@ export const getPendingByEventId: API.GetPendingByEventId = async function (requ
 }
 
 export const getByEventIdAndAccountId: API.GetByEventIdAndAccountId = async function (request, response) {
-    const { eventId, accountId } = request.params;
+    const { eventId, userId } = request.params;
     try {
-        const data = await db.rsvp.getByEventIdAndAccountId(eventId, accountId);
+        const data = await db.rsvp.getByEventIdAndAccountId(eventId, userId);
         success(response, { data });
     } catch (e) {
         log.error(e);
@@ -76,7 +76,7 @@ export const create: API.Create = async function (request, response) {
         const event = await db.event.getById(rsvp.eventId);
         if (!event) return;
         const eventData = {
-            user_id: rsvp.accountId,
+            user_id: rsvp.userId,
             event_id: rsvp.eventId,
             title: event.eventName,
             description: event.eventAbout,

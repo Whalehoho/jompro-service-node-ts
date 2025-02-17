@@ -32,7 +32,7 @@ export const createEvent: API.CreateEvent = async function (request, response) {
             return;
         }
         await db.footprint.insert({
-            accountId: event.organizerId,
+            userId: event.organizerId,
             loggedAt: now(),
             action: 'create event'
         });
@@ -44,8 +44,8 @@ export const createEvent: API.CreateEvent = async function (request, response) {
 
 export const getByAccountId: API.GetByAccountId = async function (request, response) {
     try {
-        const { accountId } = request.params;
-        const data = await db.event.getByOrganizerId(accountId);
+        const { userId } = request.params;
+        const data = await db.event.getByOrganizerId(userId);
         success(response, { data });
     } catch (e) {
         log.error(e);
@@ -55,8 +55,8 @@ export const getByAccountId: API.GetByAccountId = async function (request, respo
 
 export const getActiveEvents: API.GetActiveEvents = async function (request, response) {
     try {
-        const { accountId } = request.params;
-        const data = await db.event.allActive(accountId);
+        const { userId } = request.params;
+        const data = await db.event.allActive(userId);
         success(response, { data });
     } catch (e) {
         log.error(e);

@@ -18,9 +18,9 @@ export const all: API.All = async function (request, response) {
 };
 
 export const getByAccountId: API.GetByAccountId = async function (request, response) {
-    const { accountId } = request.params;
+    const { userId } = request.params;
     try {
-        const data = await db.region.getByAccountId(accountId);
+        const data = await db.region.getByAccountId(userId);
         success(response, { data });
     } catch (e) {
         log.error(e);
@@ -41,9 +41,9 @@ export const update: API.Update = async function (request, response) {
 };
 
 export const remove: API.Remove = async function (request, response) {
-    const { accountId } = request.params;
+    const { userId } = request.params;
     try {
-        await db.region.remove(accountId);
+        await db.region.remove(userId);
         success(response, { data: 'success' });
     } catch (e) {
         log.error(e);
@@ -64,7 +64,7 @@ export const updateDefault: API.updateDefault = async function (request, respons
 };
 
 export const addAddress: API.addAddress = async function (request, response) {
-    const { accountId } = request.params;
+    const { userId } = request.params;
     const addressData = request.body as unknown as { 
         fullAddress: string; 
         state: string;
@@ -73,10 +73,10 @@ export const addAddress: API.addAddress = async function (request, response) {
         lat: number; 
         lng: number 
     };
-    console.log('account id', accountId);
+    console.log('account id', userId);
     console.log('Address', request.body);
     try {
-        const result = await db.region.addAddress(accountId, addressData);
+        const result = await db.region.addAddress(userId, addressData);
         success(response, { data: result });
     } catch (e) {
         log.error(e);
@@ -85,7 +85,7 @@ export const addAddress: API.addAddress = async function (request, response) {
 };
 
 export const removeAddress: API.removeAddress = async function (request, response) {
-    const { accountId } = request.params;
+    const { userId } = request.params;
     const addressData = request.body as unknown as {
         fullAddress: string;
         state: string;
@@ -96,7 +96,7 @@ export const removeAddress: API.removeAddress = async function (request, respons
     };
     console.log('Remove Address', addressData);
     try {
-        await db.region.removeAddress(accountId, addressData);
+        await db.region.removeAddress(userId, addressData);
         success(response, { data: 'success' });
     } catch (e) {
         log.error(e);

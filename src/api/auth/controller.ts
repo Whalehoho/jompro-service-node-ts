@@ -14,11 +14,11 @@ export const create: API.Create = async function (request, response) {
     const user = request.body;
     console.log('Create User', user);
     try {
-        const passwordHash = await hashPassword(user.password);
+        const userPasswordHash = await hashPassword(user.password);
         const userData = {
-            email: user.email,
+            userEmail: user.userEmail,
             userName: user.userName,
-            passwordHash: passwordHash
+            userPasswordHash: userPasswordHash
         } as User;
         const data = await db.user.insert(userData);
 
@@ -26,12 +26,12 @@ export const create: API.Create = async function (request, response) {
 
         // Logging
         if(data === 'signup successful') {
-            const fetchedUser = await db.user.getByEmail(user.email);
-            if(!fetchedUser || !fetchedUser.accountId) {
+            const fetchedUser = await db.user.getByEmail(user.userEmail);
+            if(!fetchedUser || !fetchedUser.userId) {
                 return;
             }
             await db.footprint.insert({
-                accountId: fetchedUser?.accountId,
+                userId: fetchedUser?.userId,
                 loggedAt: now(),
                 action: 'signup'
             });
@@ -43,24 +43,24 @@ export const create: API.Create = async function (request, response) {
 }
 
 export const login: API.Login = async function (request, response) {
-    const user: { email: string, password: string } | undefined = request.body as { email: string, password: string } | undefined;
+    const user: { userEmail: string, password: string } | undefined = request.body as { userEmail: string, password: string } | undefined;
     // console.log('Login User', user);
     try {
         if (!user) {
             return;
         }
-        const data = await db.user.getByEmail(user.email);
+        const data = await db.user.getByEmail(user.userEmail);
         // console.log('data', data);
         if (!data) {
             console.log('no user found');
             success(response, { data: 'invalid email'});
             return;
         }
-        if (await comparePassword(user.password, data.passwordHash)) {
+        if (await comparePassword(user.password, data.userPasswordHash)) {
             console.log('success');
             const token = jwt.sign(
                 // UserId is used to verify if the sensitive data accessed by user is his own data, but this project does not have such data so it is not used.
-                { userId: data.accountId, email: data.email },  // Payload
+                { userId: data.userId, userEmail: data.userEmail },  // Payload
                 SECRET_KEY,  // Secret key
                 { expiresIn: '7h' }  // Token expiration time 
             );
@@ -69,21 +69,21 @@ export const login: API.Login = async function (request, response) {
                         data: 'success', 
                         token, 
                         user: {
-                            accountId: data.accountId,
-                            email: data.email,
+                            userId: data.userId,
+                            userEmail: data.userEmail,
                             userName: data.userName,
-                            profileImgUrl: data.profileImgUrl,
-                            profileImgDeleteUrl: data.profileImgDeleteUrl,
-                            age: data.age,
-                            gender: data.gender,
+                            userProfileImgUrl: data.userProfileImgUrl,
+                            userProfileImgDeleteUrl: data.userProfileImgDeleteUrl,
+                            userAge: data.userAge,
+                            userGender: data.userGender,
                         } 
             });
             // Logging
-            if(!data || !data.accountId){
+            if(!data || !data.userId){
                 return;
             }
             await db.footprint.insert({
-                accountId: data.accountId,
+                userId: data.userId,
                 loggedAt: now(),
                 action: 'login'
             });

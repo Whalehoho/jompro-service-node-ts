@@ -51,7 +51,7 @@ export const createChannel: API.CreateChannel = async function (request, respons
             return;
         }
         await db.footprint.insert({
-            accountId: channel.ownerId,
+            userId: channel.ownerId,
             loggedAt: now(),
             action: 'create channel'
         });

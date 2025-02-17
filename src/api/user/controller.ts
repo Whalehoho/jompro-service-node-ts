@@ -20,9 +20,9 @@ export const all: API.All = async function (request, response) {
 };
 
 export const getByEmail: API.GetByEmail = async function (request, response) {
-    const { email } = request.params;
+    const { userEmail } = request.params;
     try {
-        const data = await db.user.getByEmail(email);
+        const data = await db.user.getByEmail(userEmail);
         success(response, { data });
     } catch (e) {
         log.error(e);
@@ -31,9 +31,9 @@ export const getByEmail: API.GetByEmail = async function (request, response) {
 };
 
 export const getByAccountId: API.GetByAccountId = async function (request, response) {
-    const { accountId } = request.params;
+    const { userId } = request.params;
     try {
-        const data = await db.user.getByAccountId(accountId);
+        const data = await db.user.getByAccountId(userId);
         success(response, { data });
     } catch (e) {
         log.error(e);
@@ -54,9 +54,9 @@ export const update: API.Update = async function (request, response) {
 };
 
 export const remove: API.Remove = async function (request, response) {
-    const { email } = request.params;
+    const { userEmail } = request.params;
     try {
-        await db.user.remove(email);
+        await db.user.remove(userEmail);
         success(response, { data: 'success' });
     } catch (e) {
         log.error(e);
@@ -65,9 +65,9 @@ export const remove: API.Remove = async function (request, response) {
 }
 
 export const getProfileUrlbyAccountId: API.GetProfileUrlbyAccountId = async function (request, response) {
-    const { accountId } = request.params;
+    const { userId } = request.params;
     try {
-        const data = await db.user.getProfileUrlbyAccountId(accountId);
+        const data = await db.user.getProfileUrlbyAccountId(userId);
         success(response, { data });
     } catch (e) {
         log.error(e);
@@ -77,21 +77,21 @@ export const getProfileUrlbyAccountId: API.GetProfileUrlbyAccountId = async func
 
 export const updateProfileImg: API.UpdateProfileImg = async function (request, response) {
     const { 
-        email, 
-        profileImgUrl, 
-        profileImgDeleteUrl 
+        userEmail, 
+        userProfileImgUrl, 
+        userProfileImgDeleteUrl 
     } = request.body as unknown as { 
-        email: string, 
-        profileImgUrl: string, 
-        profileImgDeleteUrl: string 
+        userEmail: string, 
+        userProfileImgUrl: string, 
+        userProfileImgDeleteUrl: string 
     };
     try {
-        const user = await db.user.getByEmail(email);
+        const user = await db.user.getByEmail(userEmail);
         if (!user) {
             throw new Error('User not found');
         }
-        user.profileImgUrl = profileImgUrl;
-        user.profileImgDeleteUrl = profileImgDeleteUrl;
+        user.userProfileImgUrl = userProfileImgUrl;
+        user.userProfileImgDeleteUrl = userProfileImgDeleteUrl;
         const data = await db.user.update(user);
         success(response, { data: 'success' });
     } catch (e) {
@@ -102,38 +102,38 @@ export const updateProfileImg: API.UpdateProfileImg = async function (request, r
 
 export const updateProfile: API.UpdateProfile = async function (request, response) {
     const { 
-        accountId, 
+        userId, 
         userName, 
-        email, 
+        userEmail, 
         oldPassword, 
         newPassword, 
-        age, 
-        gender 
+        userAge, 
+        userGender 
     } = request.body as unknown as { 
-        accountId: string, 
+        userId: string, 
         userName: string, 
-        email: string, 
+        userEmail: string, 
         oldPassword: string, 
         newPassword: string, 
-        age: number, 
-        gender: string 
+        userAge: number, 
+        userGender: string 
     };
     try{
-        const user = await db.user.getByAccountId(accountId);
+        const user = await db.user.getByAccountId(userId);
         if (!user) {
             success(response, { data: 'User not found'});
             return;
         }
-        if (!(await comparePassword(oldPassword, user.passwordHash))) {
+        if (!(await comparePassword(oldPassword, user.userPasswordHash))) {
             console.log('wrong password');
             success(response, { data: 'invalid password'});
             return;
         }
         user.userName = userName;
-        user.email = email;
-        user.passwordHash = newPassword === undefined? user.passwordHash : await hashPassword(newPassword);
-        user.age = age;
-        user.gender = gender;
+        user.userEmail = userEmail;
+        user.userPasswordHash = newPassword === undefined? user.userPasswordHash : await hashPassword(newPassword);
+        user.userAge = userAge;
+        user.userGender = userGender;
         const data = await db.user.update(user);
         success(response, { data: 'success' });
     } catch (e) {

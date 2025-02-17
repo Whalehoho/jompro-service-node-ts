@@ -1,5 +1,5 @@
 export type Footprint = {
-    accountId: string;
+    userId: string;
     loggedAt: number;
     action: "login" | "logout" | "signup" | "create channel" |
                 "create event" | "cancel event" | 
@@ -7,18 +7,18 @@ export type Footprint = {
 }
 
 export type User = {
-    accountId?: string;
-    email: string;
+    userId?: string;
+    userEmail: string;
     userName: string;
-    passwordHash: string;
-    profileImgUrl: string;
-    profileImgDeleteUrl: string;
-    age: number;
-    gender: string;
+    userPasswordHash: string;
+    userProfileImgUrl: string;
+    userProfileImgDeleteUrl: string;
+    userAge: number;
+    userGender: string;
 }
 
 export type Region = {
-    accountId: string;
+    userId: string;
     defaultAddress?: {
         fullAddress: string;
         state: string;
@@ -87,7 +87,7 @@ export type Event = { // This is the transitional type, which actually is the se
 export type RSVP = {
     rsvpId?: string;
     eventId: string;
-    accountId: string;
+    userId: string;
     status: "pending" | "approved";
 }
 

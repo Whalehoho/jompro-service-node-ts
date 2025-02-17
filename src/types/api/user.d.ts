@@ -3,28 +3,28 @@ import { User } from '~/database/data';
 
 export type All = Controller<{ data: User[] | undefined }>;
 
-export type GetByEmail = Controller<{ data?: User }, { email: string }>;
+export type GetByEmail = Controller<{ data?: User }, { userEmail: string }>;
 
-export type GetByAccountId = Controller<{ data?: User }, { accountId: string }>;
+export type GetByAccountId = Controller<{ data?: User }, { userId: string }>;
 
 export type Update = Controller<{ data: string }, never, User>;
 
-export type Remove = Controller<{ data: string }, { email: string }>;
+export type Remove = Controller<{ data: string }, { userEmail: string }>;
 
-export type UpdateProfileImg = Controller<{ data: string }, { email: string, profileImgUrl: string, profileImgDeleteUrl: string }>;
+export type UpdateProfileImg = Controller<{ data: string }, { userEmail: string, userProfileImgUrl: string, userProfileImgDeleteUrl: string }>;
 
 export type UpdateProfile = Controller<
     { data: string },
     never,
     {
-        accountId: string;
+        userId: string;
         userName: string;
-        email: string;
+        userEmail: string;
         oldPassword: string;
         newPassword: string;
-        age: number;
-        gender: string;
+        userAge: number;
+        userGender: string;
     }
 >;
 
-export type GetProfileUrlbyAccountId = Controller<{ data: string | undefined }, { accountId: string }>;
+export type GetProfileUrlbyAccountId = Controller<{ data: string | undefined }, { userId: string }>;

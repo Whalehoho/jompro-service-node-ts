@@ -5,7 +5,7 @@ import { toCamel, toDate } from "@/util";
 const f: Record<keyof RSVP, string> = {
     rsvpId: 'rsvp_id',
     eventId: 'event_id',
-    accountId: 'account_id',
+    userId: 'user_id',
     status: 'status',
 };
 
@@ -16,7 +16,7 @@ export async function create(): Promise<void> {
         await pg.schema.createTable('rsvp', function (table) {
             table.bigIncrements('rsvp_id').primary();
             table.string('event_id').notNullable();
-            table.string('account_id').notNullable();
+            table.string('user_id').notNullable();
             table.string('status').notNullable();
         });
         await pg.raw("ALTER SEQUENCE rsvp_rsvp_id_seq RESTART WITH 1");
@@ -39,38 +39,38 @@ export async function getApprovedByEventId(eventId: string): Promise<RSVP[] | un
     return pg('rsvp').select(allFields).where('event_id', '=', eventId).andWhere('status', '=', 'approved');
 }
 
-export async function getApprovedByAccountId(accountId: string): Promise<RSVP[] | undefined> {
-    return pg('rsvp').select(allFields).where('account_id', '=', accountId).andWhere('status', '=', 'approved');
+export async function getApprovedByAccountId(userId: string): Promise<RSVP[] | undefined> {
+    return pg('rsvp').select(allFields).where('user_id', '=', userId).andWhere('status', '=', 'approved');
 }
 
 export async function getPendingByEventId(eventId: string): Promise<RSVP[] | undefined> {
     return pg('rsvp').select(allFields).where('event_id', '=', eventId).andWhere('status', '=', 'pending');
 }
 
-export async function getByAccountId(accountId: string): Promise<RSVP[] | undefined> {
-    return pg('rsvp').select(allFields).where('account_id', '=', accountId);
+export async function getByAccountId(userId: string): Promise<RSVP[] | undefined> {
+    return pg('rsvp').select(allFields).where('user_id', '=', userId);
 }
 
-export async function getByEventIdAndAccountId(eventId: string, accountId: string): Promise<RSVP | undefined> {
-    return pg('rsvp').select(allFields).where('event_id', '=', eventId).andWhere('account_id', '=', accountId).first();
+export async function getByEventIdAndAccountId(eventId: string, userId: string): Promise<RSVP | undefined> {
+    return pg('rsvp').select(allFields).where('event_id', '=', eventId).andWhere('user_id', '=', userId).first();
 }
 
 export async function getByEventIdAndStatus(eventId: string, status: string): Promise<RSVP[] | undefined> {
     return pg('rsvp').select(allFields).where('event_id', '=', eventId).andWhere('status', '=', status);
 }
 
-export async function getByAccountIdAndStatus(accountId: string, status: string): Promise<RSVP[] | undefined> {
-    return pg('rsvp').select(allFields).where('account_id', '=', accountId).andWhere('status', '=', status);
+export async function getByAccountIdAndStatus(userId: string, status: string): Promise<RSVP[] | undefined> {
+    return pg('rsvp').select(allFields).where('user_id', '=', userId).andWhere('status', '=', status);
 }
 
-export async function getByEventIdAndAccountIdAndStatus(eventId: string, accountId: string, status: string): Promise<RSVP | undefined> {
-    return pg('rsvp').select(allFields).where('event_id', '=', eventId).andWhere('account_id', '=', accountId).andWhere('status', '=', status).first();
+export async function getByEventIdAndAccountIdAndStatus(eventId: string, userId: string, status: string): Promise<RSVP | undefined> {
+    return pg('rsvp').select(allFields).where('event_id', '=', eventId).andWhere('user_id', '=', userId).andWhere('status', '=', status).first();
 }
 
 export async function insert(rsvp: RSVP): Promise<RSVP> {
     const query = pg('rsvp').insert({
         event_id: rsvp.eventId,
-        account_id: rsvp.accountId,
+        user_id: rsvp.userId,
         status: rsvp.status,
     }).returning('*');
 
@@ -78,7 +78,7 @@ export async function insert(rsvp: RSVP): Promise<RSVP> {
     return {
         rsvpId: result.rsvp_id,
         eventId: result.event_id,
-        accountId: result.account_id,
+        userId: result.user_id,
         status: result.status,
     }
 }
@@ -87,7 +87,7 @@ export async function update(rsvp: RSVP): Promise<RSVP> {
     const query = pg('rsvp').insert({
         rsvp_id: rsvp.rsvpId,
         event_id: rsvp.eventId,
-        account_id: rsvp.accountId,
+        user_id: rsvp.userId,
         status: rsvp.status,
     }).onConflict('rsvp_id').merge().returning('*');
 
@@ -95,7 +95,7 @@ export async function update(rsvp: RSVP): Promise<RSVP> {
     return {
         rsvpId: result.rsvp_id,
         eventId: result.event_id,
-        accountId: result.account_id,
+        userId: result.user_id,
         status: result.status,
     }
 }
