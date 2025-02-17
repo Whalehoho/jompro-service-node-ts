@@ -41,7 +41,7 @@ export type Channel = {
     channelId?: string;
     channelName: string;
     channelDesc: string;
-    privacy: "public" | "private";
+    channelPrivacy: "public" | "private";
     ownerId: string;
     category: string;
     createdAt?: number;
@@ -51,7 +51,7 @@ export type Subscription = {
     subscriptionId?: string;
     subscriberId: string;
     channelId: string;
-    status: "pending" | "subscribed";
+    subscriptionStatus: "pending" | "subscribed";
     subscribedAt?: number;
     unSubscribedAt?: number;
 };
@@ -88,7 +88,7 @@ export type RSVP = {
     rsvpId?: string;
     eventId: string;
     userId: string;
-    status: "pending" | "approved";
+    rsvpStatus: "pending" | "approved";
 }
 
 export type Chat = {
