@@ -95,7 +95,7 @@ export type Chat = {
     chatId?: string;
     channelId: string;
     senderId: string;
-    message: string;
+    chatMessage: string;
     type: "text" | "image" | "event";
     sentAt?: number;
 }
