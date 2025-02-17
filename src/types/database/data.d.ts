@@ -19,7 +19,7 @@ export type User = {
 
 export type Region = {
     userId: string;
-    defaultAddress?: {
+    userDefaultAddress?: {
         fullAddress: string;
         state: string;
         city: string;
@@ -27,7 +27,7 @@ export type Region = {
         lat: number;
         lng: number;
     };
-    addresses?: {
+    userAddresses?: {
         fullAddress: string;
         state: string;
         city: string;
