@@ -37,14 +37,14 @@ io.on('connection', (socket: Socket) => {
   });
 
   // Listen for new messages
-  socket.on('sendMessage', async (data: { channelId: string, message: string, type: "text" | "image" | "event", senderId: string}) => {
-      const { channelId, message, senderId, type } = data;
+  socket.on('sendMessage', async (data: { channelId: string, chatMessage: string, type: "text" | "image" | "event", senderId: string}) => {
+      const { channelId, chatMessage, senderId, type } = data;
 
     // Save the message to the database
     try {
       const sentAt = now();
-      await saveMessageToDb(channelId, message, type, senderId, sentAt);
-      io.to(channelId).emit('chatMessage', { message, senderId, type, sentAt });
+      await saveMessageToDb(channelId, chatMessage, type, senderId, sentAt);
+      io.to(channelId).emit('chatMessage', { chatMessage, senderId, type, sentAt });
       // log.info(`Message sent in room ${channelId}: ${message}`);
     } catch (err) {
       log.error('Error saving message:', err);
@@ -58,12 +58,12 @@ io.on('connection', (socket: Socket) => {
 });
 
 // Function to save message to PostgreSQL database
-const saveMessageToDb = async (channelId: string, message: string, type: "text" | "image" | "event", senderId: string, sentAt: number) => {
+const saveMessageToDb = async (channelId: string, chatMessage: string, type: "text" | "image" | "event", senderId: string, sentAt: number) => {
   try {
     // Assuming a function exists in your database service for saving messages
     await db.chat.insert({
       channelId,
-      message,
+      chatMessage,
       type,
       senderId,
       sentAt: sentAt
