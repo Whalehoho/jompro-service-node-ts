@@ -7,6 +7,7 @@ const router = express.Router();
 
 // Event
 router.post('/createEvent', controller.createEvent);
+router.post('/updateEvent', controller.updateEvent);
 router.get('/getByAccountId/:userId', controller.getByAccountId);
 router.get('/getActiveEvents/:userId', controller.getActiveEvents);
 router.get('/getActiveByEventId/:eventId', controller.getActiveByEventId);

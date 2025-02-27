@@ -9,6 +9,8 @@ const f: Record<keyof User, string> = {
     userPasswordHash: 'user_password_hash',
     userProfileImgUrl: 'user_profile_img_url',
     userProfileImgDeleteUrl: 'user_profile_img_delete_url',
+    verifyFaceImgUrl: 'verify_face_img_url',
+    verified: 'verified',
     userAge: 'user_age',
     userGender: 'user_gender',
 };
@@ -24,6 +26,8 @@ export async function create(): Promise<void> {
             table.string('user_password_hash').notNullable();
             table.string('user_profile_img_url').nullable();
             table.string('user_profile_img_delete_url').nullable();
+            table.string('verify_face_img_url').nullable();
+            table.boolean('verified').defaultTo(false);
             table.integer('user_age').nullable();
             table.string('user_gender').nullable();
         });
@@ -75,6 +79,18 @@ export async function insert(user: User): Promise<string> {
     }).returning('*');
     await query;
     return 'signup successful';
+}
+
+export async function updatedVerified(userId: string): Promise<void> {
+    await pg('USER_T').update({ verified: true }).where('user_id', '=', userId);
+}
+
+export async function deleteVerified(userId: string): Promise<void> {
+    await pg('USER_T').update({ verified: null}).where('user_id', '=', userId);
+}
+
+export async function updateVerifyFaceImgUrl(userId: string, verifyFaceImgUrl: string): Promise<void> {
+    await pg('USER_T').update({ verify_face_img_url: verifyFaceImgUrl }).where('user_id', '=', userId);
 }
 
 export async function remove(userEmail: string): Promise<void> {

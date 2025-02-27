@@ -74,6 +74,7 @@ export const login: API.Login = async function (request, response) {
                             userName: data.userName,
                             userProfileImgUrl: data.userProfileImgUrl,
                             userProfileImgDeleteUrl: data.userProfileImgDeleteUrl,
+                            verified: data.verified,
                             userAge: data.userAge,
                             userGender: data.userGender,
                         } 

@@ -28,3 +28,5 @@ export type UpdateProfile = Controller<
 >;
 
 export type GetProfileUrlbyAccountId = Controller<{ data: string | undefined }, { userId: string }>;
+
+export type VerifyUserFace = Controller<{ data: string }, never, { userId: string, imgURL: string }>;

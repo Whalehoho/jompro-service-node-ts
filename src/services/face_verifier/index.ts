@@ -20,7 +20,7 @@ const options = {
     cert: fs.readFileSync('./server.cert')
 };
 
-const pythonConfig = config.get<Config>('event_recommender_engine');
+const pythonConfig = config.get<Config>('face_verifier_engine');
 
 // const log = logger('RECOMMENDER', 'PYTHON API');
 
@@ -32,26 +32,15 @@ const pythonConfig = config.get<Config>('event_recommender_engine');
 // app.use(cookieParser());
 // app.use(express.json());
 
-export const addEvent = async (event: any) => {
+export const verifyFace = async (event: any) => {
     try {
       console.log(event);
-      const response = await axios.post(`http://${pythonConfig.host}:${pythonConfig.port}/add_event`, event);
+      const response = await axios.post(`http://${pythonConfig.host}:${pythonConfig.port}/verify_face`, event);
+      console.log('response',response.data);
       return response.data;
     } catch (error) {
       return { error: error.message };
     }
-};
-
-export const getRecommendations: API.getRecommendations = async (request, response) => {
-  try {
-    console.log(request.body);
-    const data = request.body;
-    const axiosResponse = await axios.post(`http://${pythonConfig.host}:${pythonConfig.port}/recommend`, data);
-    console.log(axiosResponse.data);
-    success(response, { data: axiosResponse.data });
-  } catch (error) {
-    return { error: error.message };
-  }
 };
 
 

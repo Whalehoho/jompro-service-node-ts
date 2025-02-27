@@ -42,6 +42,40 @@ export const createEvent: API.CreateEvent = async function (request, response) {
     }
 }
 
+export const updateEvent: API.UpdateEvent = async function (request, response) {
+    const event = request.body;
+    try {
+        // Get original event title and description
+        if (!event.eventId) {
+            throw new Error('Event ID is required');
+        }
+        const originalEvent = await db.event.getById(event.eventId);
+        const originalTitle = originalEvent?.eventName;
+        const originalDescription = originalEvent?.eventAbout;
+
+        console.log('originalDescription',event.eventAbout);
+        const data = await db.event.update(event);
+        success(response, { data });
+
+
+        if(originalTitle === data.eventName && originalDescription === data.eventAbout) {
+            console.log('Event title and description did not change');
+            return;
+        }
+
+        const eventRecommenderData = {
+            user_id: event.organizerId,
+            event_id: data.eventId,
+            title: event.eventName,
+            description: event.eventAbout,
+        };
+        await addEvent(eventRecommenderData);
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}
+
 export const getByAccountId: API.GetByAccountId = async function (request, response) {
     try {
         const { userId } = request.params;

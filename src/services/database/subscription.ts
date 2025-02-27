@@ -22,6 +22,10 @@ export async function create(): Promise<void> {
             table.string('subscription_status').notNullable();
             table.timestamp('subscribed_at', { useTz: true }).nullable();
             table.timestamp('un_subscribed_at', { useTz: true }).nullable();
+
+            // Adding foreign key constraints
+            table.foreign('subscriber_id').references('user_id').inTable('USERS_T').onDelete('CASCADE');
+            table.foreign('channel_id').references('channel_id').inTable('CHANNEL_T').onDelete('CASCADE');
         });
         await pg.raw("ALTER SEQUENCE subscription_subscription_id_seq RESTART WITH 1");
     }

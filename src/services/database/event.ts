@@ -42,6 +42,9 @@ export async function create(): Promise<void> {
             table.string('gender_restriction').notNullable();
             table.jsonb('age_restriction').notNullable();
             table.boolean('auto_approve').notNullable();
+
+            table.foreign('channel_id').references('channel_id').inTable('CHANNEL_T').onDelete('CASCADE');
+            table.foreign('organizer_id').references('user_id').inTable('USERS_T').onDelete('CASCADE');
         });
         await pg.raw("ALTER SEQUENCE event_event_id_seq RESTART WITH 1");
     }
@@ -182,7 +185,7 @@ export async function insert(event: Event): Promise<Event> {
 }
 
 
-export async function update(event: Event): Promise<void> {
+export async function update(event: Event): Promise<Event> {
     const query = pg('EVENT_T').insert({
         event_id: event.eventId,
         channel_id: event.channelId,
@@ -201,7 +204,25 @@ export async function update(event: Event): Promise<void> {
         auto_approve: event.autoApprove
     }).onConflict('event_id').merge().returning('*');
 
-    return (await query).pop();
+    const result = (await query).pop();
+    return {
+        eventId: result.event_id,
+        channelId: result.channel_id,
+        eventName: result.event_name,
+        eventAbout: result.event_about,
+        category: result.category,
+        organizerId: result.organizer_id,
+        createdAt: result.created_at,
+        eventStatus: result.event_status,
+        startTime: result.start_time,
+        eventDuration: result.event_duration,
+        eventLocation: result.event_location,
+        maxParticipants: result.max_participants,
+        genderRestriction: result.gender_restriction,
+        ageRestriction: result.age_restriction,
+        autoApprove: result.auto_approve
+    };
+
 }
 
 export async function search(query: string): Promise<Event[] | undefined> {

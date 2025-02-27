@@ -6,6 +6,7 @@ import * as db from '@/services/database';
 import { User } from '~/database/data';
 import { hashPassword, comparePassword, SECRET_KEY } from '@/util';
 import jwt from 'jsonwebtoken';
+import { verifyFace } from '@/services/face_verifier';
 
 const log = logger('API', 'PROD');
 
@@ -93,6 +94,11 @@ export const updateProfileImg: API.UpdateProfileImg = async function (request, r
         user.userProfileImgUrl = userProfileImgUrl;
         user.userProfileImgDeleteUrl = userProfileImgDeleteUrl;
         const data = await db.user.update(user);
+        if (user.userId) {
+            await db.user.deleteVerified(user.userId);
+        } else {
+            throw new Error('User ID is undefined');
+        }
         success(response, { data: 'success' });
     } catch (e) {
         log.error(e);
@@ -136,6 +142,31 @@ export const updateProfile: API.UpdateProfile = async function (request, respons
         user.userGender = userGender;
         const data = await db.user.update(user);
         success(response, { data: 'success' });
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}
+
+export const verifyUserFace: API.VerifyUserFace = async function (request, response) {
+    console.log('request.body', request.body);
+    const { userId, imgUrl } = request.body as unknown as { userId: string, imgUrl: string };
+    try {
+        const user = await db.user.getByAccountId(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+        await db.user.updateVerifyFaceImgUrl(userId, imgUrl);
+        const profileImgUrl = user.userProfileImgUrl;
+        const data = await verifyFace({
+            img1_url: profileImgUrl,
+            img2_url: imgUrl
+        });
+        console.log('Face verification result', data);
+        if(data.message && data.message === 'Success') {
+            await db.user.updatedVerified(userId);
+        } 
+        success(response, { data });
     } catch (e) {
         log.error(e);
         failure(response, e.message);

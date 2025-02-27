@@ -11,5 +11,6 @@ router.get('/remove/:userEmail', controller.remove);
 router.put('/updateProfileImg', controller.updateProfileImg);
 router.put('/updateProfile', controller.updateProfile);
 router.get('/getProfileUrlbyAccountId/:userId', controller.getProfileUrlbyAccountId);
+router.post('/verifyFace', controller.verifyUserFace);
 
 export default router;

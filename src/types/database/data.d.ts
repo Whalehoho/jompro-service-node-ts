@@ -13,6 +13,8 @@ export type User = {
     userPasswordHash: string;
     userProfileImgUrl: string;
     userProfileImgDeleteUrl: string;
+    verifyFaceImgUrl?: string;
+    verified?: boolean;
     userAge: number;
     userGender: string;
 }
