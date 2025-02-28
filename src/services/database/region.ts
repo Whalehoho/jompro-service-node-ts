@@ -18,7 +18,7 @@ export async function create(): Promise<void> {
             table.jsonb('user_addresses').notNullable();
 
             // Adding foreign key constraints
-            table.foreign('user_id').references('user_id').inTable('USERS_T').onDelete('CASCADE');
+            // table.foreign('user_id').references('user_id').inTable('USERS_T').onDelete('CASCADE');
         });
     }
 }

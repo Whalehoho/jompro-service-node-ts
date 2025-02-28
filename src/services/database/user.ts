@@ -31,7 +31,7 @@ export async function create(): Promise<void> {
             table.integer('user_age').nullable();
             table.string('user_gender').nullable();
         });
-        await pg.raw("ALTER SEQUENCE user_usr_id_seq RESTART WITH 758");
+        // await pg.raw("ALTER SEQUENCE user_usr_id_seq RESTART WITH 758");
     }
 }
 

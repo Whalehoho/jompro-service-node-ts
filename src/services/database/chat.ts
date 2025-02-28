@@ -24,10 +24,10 @@ export async function create(): Promise<void> {
             table.string('type').defaultTo('text').notNullable();
             table.timestamp('sent_at', { useTz: true }).defaultTo(pg.fn.now()).notNullable();
 
-            table.foreign('channel_id').references('channel_id').inTable('CHANNEL_T').onDelete('CASCADE');
-            table.foreign('sender_id').references('user_id').inTable('USERS_T').onDelete('CASCADE');
+            // table.foreign('channel_id').references('channel_id').inTable('CHANNEL_T').onDelete('CASCADE');
+            // table.foreign('sender_id').references('user_id').inTable('USERS_T').onDelete('CASCADE');
         });
-        await pg.raw("ALTER SEQUENCE chat_chat_id_seq RESTART WITH 1");
+        // await pg.raw("ALTER SEQUENCE chat_chat_id_seq RESTART WITH 1");
     }
 }
 

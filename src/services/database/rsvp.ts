@@ -20,10 +20,10 @@ export async function create(): Promise<void> {
             table.string('rsvp_status').notNullable();
 
             // Adding foreign key constraints
-            table.foreign('user_id').references('user_id').inTable('USERS_T').onDelete('CASCADE');
-            table.foreign('event_id').references('event_id').inTable('EVENT_T').onDelete('CASCADE');
+            // table.foreign('user_id').references('user_id').inTable('USERS_T').onDelete('CASCADE');
+            // table.foreign('event_id').references('event_id').inTable('EVENT_T').onDelete('CASCADE');
         });
-        await pg.raw("ALTER SEQUENCE rsvp_rsvp_id_seq RESTART WITH 1");
+        // await pg.raw("ALTER SEQUENCE rsvp_rsvp_id_seq RESTART WITH 1");
     }
 }
 

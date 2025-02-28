@@ -42,6 +42,16 @@ export const addEvent = async (event: any) => {
     }
 };
 
+export const joinEvent = async (event: any) => {
+    try {
+      console.log(event);
+      const response = await axios.post(`http://${pythonConfig.host}:${pythonConfig.port}/join_event`, event);
+      return response.data;
+    } catch (error) {
+      return { error: error.message };
+    }
+};
+
 export const getRecommendations: API.getRecommendations = async (request, response) => {
   try {
     console.log(request.body);

@@ -25,9 +25,9 @@ export async function create(): Promise<void> {
             table.string('category').notNullable();
             table.timestamp('created_at', { useTz: true }).defaultTo(pg.fn.now()).notNullable();
 
-            table.foreign('owner_id').references('user_id').inTable('USERS_T').onDelete('CASCADE');
+            // table.foreign('owner_id').references('user_id').inTable('USERS_T').onDelete('CASCADE');
         });
-        await pg.raw("ALTER SEQUENCE event_event_id_seq RESTART WITH 1");
+        // await pg.raw("ALTER SEQUENCE event_event_id_seq RESTART WITH 1");
     }
 }
 

@@ -43,10 +43,10 @@ export async function create(): Promise<void> {
             table.jsonb('age_restriction').notNullable();
             table.boolean('auto_approve').notNullable();
 
-            table.foreign('channel_id').references('channel_id').inTable('CHANNEL_T').onDelete('CASCADE');
-            table.foreign('organizer_id').references('user_id').inTable('USERS_T').onDelete('CASCADE');
+            // table.foreign('channel_id').references('channel_id').inTable('CHANNEL_T').onDelete('CASCADE');
+            // table.foreign('organizer_id').references('user_id').inTable('USERS_T').onDelete('CASCADE');
         });
-        await pg.raw("ALTER SEQUENCE event_event_id_seq RESTART WITH 1");
+        // await pg.raw("ALTER SEQUENCE event_event_id_seq RESTART WITH 1");
     }
 }
 

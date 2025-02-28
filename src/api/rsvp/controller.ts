@@ -5,7 +5,7 @@ import { success, failure } from '@/api/util';
 import * as db from '@/services/database';
 import { RSVP } from '~/database/data';
 import { now } from '@/util';
-import { addEvent } from '@/services/event_recommender';
+import { addEvent, joinEvent } from '@/services/event_recommender';
 import { title } from 'process';
 
 const log = logger('API', 'PROD');
@@ -81,7 +81,7 @@ export const create: API.Create = async function (request, response) {
             title: event.eventName,
             description: event.eventAbout,
         };
-        await addEvent(eventData);
+        await joinEvent(eventData);
 
 
     } catch (e) {
