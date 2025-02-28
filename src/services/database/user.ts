@@ -97,6 +97,10 @@ export async function remove(userEmail: string): Promise<void> {
     await pg('USER_T').delete().where('user_email', '=', userEmail);
 }
 
+export async function resetPassword(email: string, password: string): Promise<void> {
+    await pg('USER_T').update({ user_password_hash: password }).where('user_email', '=', email);
+}
+
 export async function main(): Promise<void> {
     await create();
 }

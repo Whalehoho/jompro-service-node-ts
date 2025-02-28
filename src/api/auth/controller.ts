@@ -7,6 +7,7 @@ import { User, Footprint } from '~/database/data';
 import { hashPassword, comparePassword, SECRET_KEY } from '@/util';
 import jwt from 'jsonwebtoken';
 import { now } from '@/util';
+import { sendVerificationEmail, verifyCode } from '@/services/mail_sender';
 
 const log = logger('API', 'PROD');
 
@@ -93,6 +94,56 @@ export const login: API.Login = async function (request, response) {
             console.log('wrong password');
             success(response, { data: 'invalid password'});
         }
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}
+
+export const requestPasswordReset: API.RequestPasswordReset = async function (request, response) {
+    const { userEmail } = request.body;
+    try {
+        const user = await db.user.getByEmail(userEmail);
+        if (!user) {
+            return success(response, { data: 'invalid email' });
+        }
+        const result = await sendVerificationEmail(userEmail);
+        if (result.success) {
+            success(response, { data: 'success' });
+        } else {
+            failure(response, result.message);
+        }
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}
+
+export const verifyPasswordResetCode: API.VerifyPasswordResetCode = async function (request, response) {
+    const { email, code } = request.body;
+    try {
+        const result = verifyCode(email, code);
+        if (result.success) {
+            success(response, { data: 'success' });
+        } else {
+            failure(response, result.message);
+        }
+    } catch (e) {
+        log.error(e);
+        failure(response, e.message);
+    }
+}
+
+export const resetPassword: API.ResetPassword = async function (request, response) {
+    const { email, password } = request.body;
+    try {
+        const user = await db.user.getByEmail(email);
+        if (!user) {
+            return success(response, { data: 'invalid email' });
+        }
+        const userPasswordHash = await hashPassword(password);
+        await db.user.update({ ...user, userPasswordHash });
+        success(response, { data: 'success' });
     } catch (e) {
         log.error(e);
         failure(response, e.message);
