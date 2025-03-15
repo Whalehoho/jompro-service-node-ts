@@ -158,15 +158,15 @@ export const verifyUserFace: API.VerifyUserFace = async function (request, respo
         }
         await db.user.updateVerifyFaceImgUrl(userId, imgUrl);
         const profileImgUrl = user.userProfileImgUrl;
-        const data = await verifyFace({
-            img1_url: profileImgUrl,
-            img2_url: imgUrl
-        });
-        console.log('Face verification result', data);
-        if(data.message && data.message === 'Success') {
-            await db.user.updatedVerified(userId);
-        } 
-        success(response, { data });
+        // const data = await verifyFace({
+        //     img1_url: profileImgUrl,
+        //     img2_url: imgUrl
+        // });
+        // console.log('Face verification result', data);
+        // if(data.message && data.message === 'Success') {
+        //     await db.user.updatedVerified(userId);
+        // } 
+        success(response, { data: "Pending" });
     } catch (e) {
         log.error(e);
         failure(response, e.message);

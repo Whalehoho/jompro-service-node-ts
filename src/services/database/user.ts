@@ -27,7 +27,7 @@ export async function create(): Promise<void> {
             table.string('user_profile_img_url').nullable();
             table.string('user_profile_img_delete_url').nullable();
             table.string('verify_face_img_url').nullable();
-            table.boolean('verified').defaultTo(false);
+            table.boolean('verified').nullable();
             table.integer('user_age').nullable();
             table.string('user_gender').nullable();
         });
