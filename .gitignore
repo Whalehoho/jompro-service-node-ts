@@ -121,3 +121,8 @@ config/prod*
 !.firebase/*
 
 *.pem
+
+# Custom ignored files
+.env
+server.cert
+server.key
