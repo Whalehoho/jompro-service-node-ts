@@ -21,15 +21,16 @@ const log = logger('LOADER', 'API');
 
 const app = express();
 
+// Set middlewares
 app.set('trust proxy', true);
-// app.use(cors());
-app.use(cors({ origin: "*" }));
-app.use(cookieParser());
-app.use(express.json());
+app.use(cors({ origin: "*" })); // Allow all origins, meaning any domain can access the API
+app.use(cookieParser()); // To parse cookies from request headers
+app.use(express.json()); // To parse JSON request bodies
 
+// Register router, mount it to the root path, meaning all routes will be handled by router.ts
 app.use('/', router);
 
-app.use('/', router);
+// Start HTTP server
 app.listen(port, "0.0.0.0", () => {
     log.info(
         `API Server started @${port}. Listening to routes:`,
